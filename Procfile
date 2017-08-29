@@ -1,1 +1,1 @@
-web: Data.price 
+web: Data.price.printPrice 
