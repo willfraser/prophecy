@@ -1,1 +1,1 @@
-web: price.printPrice
+web: price.printPrice()
