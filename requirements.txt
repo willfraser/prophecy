@@ -18,7 +18,7 @@ py==1.4.34
 pycurl==7.19.3
 pyparsing==2.0.1
 pytest==3.2.1
-python-dateutil==2.0
+python-dateutil==2.6.1
 pytz==2012c
 requests==2.2.1
 scipy==0.13.3
