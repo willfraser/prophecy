@@ -1,1 +1,1 @@
-worker: python prophecy.py
+web: python prophecy.py
