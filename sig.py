@@ -1,7 +1,6 @@
 import time
 import hashlib
 import hmac
-import config
 
 
 def hash():
