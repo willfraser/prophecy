@@ -3,10 +3,16 @@ import hashlib
 import hmac
 import config
 
+
 def hash():
-    key = config.get_key()
-    secret = config.get_secret()
-    clientID = config.get_clientID()
+    
+    url = "https://api.heroku.com/apps/frozen-garden-83591/config-vars"
+    r = requests.get(url)
+    values = r.json()
+
+    key = values['key']
+    secret = values['secret']
+    clientID = values['clientID']
     
     nonce =  int(time.time())
     
