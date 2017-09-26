@@ -1,19 +1,24 @@
 import time
 import hashlib
 import hmac
-
+import requests
+import config
+import calendar
 
 def hash():
     
-    url = "https://api.heroku.com/apps/frozen-garden-83591/config-vars"
-    r = requests.get(url)
-    values = r.json()
+#    url = "https://api.heroku.com/apps/frozen-garden-83591/config-vars"
+#    r = requests.get(url)
+#    values = r.json()
 
-    key = values['key']
-    secret = values['secret']
-    clientID = values['clientID']
+    key = config.get_key()
+    secret = config.get_secret()
+    clientID = config.get_clientID()
     
-    nonce =  int(time.time())
+    
+    nonce =  int(time.time()*1000000)+374491605044
+    
+
     
     message = str(nonce)+clientID+key   
     message = bytes(message,'utf-8')
