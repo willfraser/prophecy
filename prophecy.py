@@ -12,7 +12,7 @@ k = b[2] #set k to kraken
 
 #runs the selected algorithm continually at the specified "steps" or seconds
 polling.poll(
-lambda: split.run(0.018, 0.0122, 0.0044, f, c, k),
+lambda: split.run(0.018, 0.0098, 0.0044, f, c, k),
 step=5,
 poll_forever=True)
     
