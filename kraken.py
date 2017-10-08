@@ -1,10 +1,4 @@
-import requests
-import json
-import exchange
-import sig
 from pprint import pprint
-import kraken_api
-import polling
 import time 
 
 #get the 1st bid and 1st ask of any specified currency

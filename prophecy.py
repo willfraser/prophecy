@@ -1,7 +1,5 @@
 import polling
 import split
-import kraken
-import kraken_api
 
 upside = input("Enter the minimum upside percentage in decemail I.E. 1% is 0.01 :")
 downside = input("Enter the minimum downside percentage in decemail I.E. 1% is 0.01 :")
