@@ -26,9 +26,11 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                         })
             
     fiat_currency.ask_price = values["result"][pair]["asks"][0].pop(0)
+    fiat_currency.ask_price = float(fiat_currency.ask_price) * float(fiat_currency.exchange_USD)
     fiat_currency.ask_volume = values["result"][pair]["asks"][0].pop(0)
     
     fiat_currency.bid_price = values["result"][pair]["bids"][0].pop(0)
+    fiat_currency.bid_price = float(fiat_currency.bid_price) * float(fiat_currency.exchange_USD)
     fiat_currency.bid_volume = values["result"][pair]["bids"][0].pop(0)
     
     return fiat_currency
