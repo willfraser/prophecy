@@ -110,7 +110,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         #triggers the buy action with a safety factor to again insure we don't get stuck with 
                         #extra currency
                         print("Buy", volume, "of", crypto.currency, "in", currency_1.currency, "and sell", currency_2.currency, "for a margin of", currency_1.upside_arbitrage[currency_2.currency])
-                        kraken.buy_sell(volume, currency_1, currency_2, crypto.currency, 0.5,k)
+                        kraken.buy_sell(volume, currency_1, currency_2, crypto.currency, 0.8,k)
                     else:
                         #no trades found that meet our criteria
                         print("Hold", crypto.currency, currency_1.currency, "through", currency_2.currency, "upside margin is:", currency_1.upside_arbitrage[currency_2.currency])
