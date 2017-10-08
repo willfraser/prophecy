@@ -95,7 +95,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                 if(currency_1.currency != currency_2.currency):
                     
                     #evaluates to see if gain is sufficent to go from USD to non-USD
-                    if(currency_1.upside_arbitrage[currency_2.currency]>float(target_up)):
+                    if(float(currency_1.upside_arbitrage[currency_2.currency])>float(target_up)):
                         
                         #determine if bids or asks are volume limiting and only trade the smallest of the two 
                         #so we don't get stuck with extra 
