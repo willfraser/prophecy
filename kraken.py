@@ -108,7 +108,7 @@ def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margi
     buy_pair = "X"+transfer_currency+"Z"+buy_currency.currency
     sell_pair = "X"+transfer_currency+"Z"+sell_currency.currency
     
-    if(amount < (minimum_order*(1/saftey_margin))):
+    if(amount < minimum_order):
         return 0
     else:
         #buy at market price
