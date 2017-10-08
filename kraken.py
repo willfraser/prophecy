@@ -99,24 +99,16 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
 
 def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margin,k):
     
-    minimum_order = 0.02
-
-    #safety adjust trade volume
-    amount = float(amount) * float(saftey_margin)
-    
     #setup pairs 
     buy_pair = "X"+transfer_currency+"Z"+buy_currency.currency
     sell_pair = "X"+transfer_currency+"Z"+sell_currency.currency
     
-    if(amount < minimum_order):
-        return 0
-    else:
-        #buy at market price
-        if(buy_market(amount, buy_pair, buy_currency, k)):
-            #sell all currency
-            sell_all_market(sell_pair, k )
+    #buy at market price
+    if(buy_market(amount, buy_pair, buy_currency, k)):
+        #sell all currency
+        sell_all_market(sell_pair, k )
                     
-        return 1
+    return 1
         
 def buy_market(amount, pair, currency, k):
     
