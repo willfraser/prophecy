@@ -11,14 +11,14 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
         values = k.query_public('Depth',
                             {'pair': pair
                             })
-    except k.HTTPError as e:
+    except requests.HTTPError as e:
         status_code = e.response.status_code
         if(int(status_code)>=500):
             values = k.query_public('Depth',
                             {'pair': pair
                             })
                             
-    except k.Timeout:
+    except requests.Timeout:
         values = k.query_public('Depth',
                             {'pair': pair
                             })
@@ -29,14 +29,14 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
             values = k.query_public('Depth',
                             {'pair': pair
                             })
-        except k.HTTPError as e:
+        except requests.HTTPError as e:
             status_code = e.response.status_code
             if(int(status_code)>=500):
                 values = k.query_public('Depth',
                                 {'pair': pair
                                 })
                                 
-        except k.Timeout:
+        except requests.Timeout:
             values = k.query_public('Depth',
                                 {'pair': pair
                                 })
@@ -46,13 +46,13 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                 values = k.query_public('Depth',
                             {'pair': pair
                             })
-            except k.HTTPError as e:
+            except requests.HTTPError as e:
                 status_code = e.response.status_code
                 if(int(status_code)>=500):
                     values = k.query_public('Depth',
                                 {'pair': pair
                                 })
-            except k.Timeout:
+            except requests.Timeout:
                 values = k.query_public('Depth',
                                 {'pair': pair
                                 })
