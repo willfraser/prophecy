@@ -1,5 +1,7 @@
 from pprint import pprint
 import time 
+import requests
+
 
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
@@ -109,6 +111,7 @@ def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margi
     sell_pair = "X"+transfer_currency+"Z"+sell_currency.currency
     
     if(amount < minimum_order):
+        print("less than min order")
         return 0
     else:
         #buy at market price
@@ -139,23 +142,64 @@ def buy_market(amount, pair, currency, k):
         if(fiat_balance>total_purchase_price):
             print("purchase total")
             #make buy
-            pprint(k.query_private('AddOrder',
-                        {'pair': pair,
-                         'type': 'buy',
-                         'ordertype': 'market',
-                         'volume': amount,
-                        }))
+            
+            try:
+                pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+                        
+            except k.HTTPError as e:
+                status_code = e.response.status_code
+                if(int(status_code)>=500):
+                    pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+                
+            except k.Timeout:
+                pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+                
             
         else:
             amount = round(float(fiat_balance)/float(currency.ask_price),4)
-            
+            print("purchase reduced total")
             #make buy
-            pprint(k.query_private('AddOrder',
-                        {'pair': pair,
-                         'type': 'buy',
-                         'ordertype': 'market',
-                         'volume': amount,
-                        }))
+            
+            try:
+                pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+            
+            except k.HTTPError as e:
+                status_code = e.response.status_code
+                if(int(status_code)>=500):
+                    pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+            
+            except k.Timeout:
+                pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
         
         while k.query_private('OpenOrders')['result']['open']:
                 time.sleep(.1)
@@ -181,7 +225,25 @@ def sell_all_market(pair, k):
         print("Placing sell order for", amount, "of", pair)
         
         #make sell
-        pprint(k.query_private('AddOrder',
+        try:
+            pprint(k.query_private('AddOrder',
+                        {'pair': pair,
+                         'type': 'sell',
+                         'ordertype': 'market',
+                         'volume': amount,
+                        }))
+        except k.HTTPError as e:
+            status_code = e.response.status_code
+            if(int(status_code)>=500):
+                pprint(k.query_private('AddOrder',
+                        {'pair': pair,
+                         'type': 'sell',
+                         'ordertype': 'market',
+                         'volume': amount,
+                        }))    
+            
+        except k.Timeout:
+            pprint(k.query_private('AddOrder',
                     {'pair': pair,
                      'type': 'sell',
                      'ordertype': 'market',
