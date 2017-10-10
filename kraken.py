@@ -7,19 +7,55 @@ import requests
 def get_ask_bid(fiat_currency,crypto_currency,k):
     pair="X"+crypto_currency+"Z"+fiat_currency.currency
     
-    values = k.query_public('Depth',
-                        {'pair': pair
-                        })
+    try:
+        values = k.query_public('Depth',
+                            {'pair': pair
+                            })
+    except k.HTTPError as e:
+        status_code = e.response.status_code
+        if(int(status_code)>=500):
+            values = k.query_public('Depth',
+                            {'pair': pair
+                            })
+                            
+    except k.Timeout:
+        values = k.query_public('Depth',
+                            {'pair': pair
+                            })
+        
     
     while(len(values["result"][pair]["bids"])<0):
-        values = k.query_public('Depth',
-                        {'pair': pair
-                        })
-  
-        while(len(values["result"][pair]["asks"])<0):
+        try:
             values = k.query_public('Depth',
-                        {'pair': pair
-                        })
+                            {'pair': pair
+                            })
+        except k.HTTPError as e:
+            status_code = e.response.status_code
+            if(int(status_code)>=500):
+                values = k.query_public('Depth',
+                                {'pair': pair
+                                })
+                                
+        except k.Timeout:
+            values = k.query_public('Depth',
+                                {'pair': pair
+                                })
+      
+        while(len(values["result"][pair]["asks"])<0):
+            try:
+                values = k.query_public('Depth',
+                            {'pair': pair
+                            })
+            except k.HTTPError as e:
+                status_code = e.response.status_code
+                if(int(status_code)>=500):
+                    values = k.query_public('Depth',
+                                {'pair': pair
+                                })
+            except k.Timeout:
+                values = k.query_public('Depth',
+                                {'pair': pair
+                                })
             
     fiat_currency.ask_price = values["result"][pair]["asks"][0].pop(0)
     fiat_currency.ask_price = float(fiat_currency.ask_price) * float(fiat_currency.exchange_USD)

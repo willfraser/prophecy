@@ -50,7 +50,7 @@ def set_split():
     XBT = Crypto("XBT")
     print("XBT Initilaized")
     
-    my_cryptos = [ETH, XBT, ]
+    my_cryptos = [ETH, XBT]
     
     k = kraken_api.API()
     k.load_key('kraken.key')
