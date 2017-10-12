@@ -115,16 +115,16 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         #no trades found that meet our criteria
                         print("Hold", crypto.currency, currency_1.currency, "through", currency_2.currency, "upside margin is:", currency_1.upside_arbitrage[currency_2.currency])
                     
-                    # #evaluates if losses are small enough to bring fiat back from non-USD to USD
-                    # if(currency_1.downside_arbitrage_USD>(-1*float(target_down))):
-                    #     if(currency.bid_volume < USD.ask_volume):
-                    #         volume = currency.bid_volume
-                    #     else:
-                    #         volume = USD.ask_volume
+                    #evaluates if losses are small enough to bring fiat back from non-USD to USD
+                    if(currency_1.downside_arbitrage_USD>(-1*float(target_down))):
+                        if(currency.bid_volume < USD.ask_volume):
+                            volume = currency.bid_volume
+                        else:
+                            volume = USD.ask_volume
                         
-                    #     #triggers the buy action with a safety factor to again insure we don't get stuck with 
-                    #     #extra currency
-                    #     print("Buy", volume, "of", crypto.currency, "in", currency.currency, "and sell USD for a margin of", currency.downside_arbitrage_USD)
+                        #triggers the buy action with a safety factor to again insure we don't get stuck with 
+                        #extra currency
+                        print("Buy", volume, "of", crypto.currency, "in", currency_1.currency, "and sell", currency_2.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
                     #     kraken.buy_sell(volume,currency, USD, crypto.currency,0.5,k)
                     
                     # else:
