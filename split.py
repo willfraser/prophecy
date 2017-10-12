@@ -116,11 +116,11 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         print("Hold", crypto.currency, currency_1.currency, "through", currency_2.currency, "upside margin is:", currency_1.upside_arbitrage[currency_2.currency])
                     
                     #evaluates if losses are small enough to bring fiat back from non-USD to USD
-                    if(currency_1.downside_arbitrage_USD>(-1*float(target_down))):
-                        if(currency.bid_volume < USD.ask_volume):
-                            volume = currency.bid_volume
+                    if(currency_1.downside_arbitrage[currency_2.currency]>(-1*float(target_down))):
+                        if(currency_1.bid_volume < currency_2.ask_volume):
+                            volume = currency_1.bid_volume
                         else:
-                            volume = USD.ask_volume
+                            volume = currency_2.ask_volume
                         
                         #triggers the buy action with a safety factor to again insure we don't get stuck with 
                         #extra currency
