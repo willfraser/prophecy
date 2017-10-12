@@ -96,7 +96,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                     
                     #evaluates to see if gain is sufficent to go from USD to non-USD
                     if(float(currency_1.upside_arbitrage[currency_2.currency])>float(target_up)):
-                        
+                        print("upside op found")
                         #determine if bids or asks are volume limiting and only trade the smallest of the two 
                         #so we don't get stuck with extra 
                         # print(currency_1.ask_volume, "units being asked for in", currency_1.currency)
@@ -117,6 +117,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                     
                     #evaluates if losses are small enough to bring fiat back from non-USD to USD
                     if(currency_1.downside_arbitrage[currency_2.currency]>(-1*float(target_down))):
+                        print("downside op found")
                         if(currency_1.bid_volume < currency_2.ask_volume):
                             volume = currency_1.bid_volume
                         else:
@@ -124,11 +125,11 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         
                         #triggers the buy action with a safety factor to again insure we don't get stuck with 
                         #extra currency
-                        print("Buy", volume, "of", crypto.currency, "in", currency_1.currency, "and sell", currency_2.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
-                        kraken.buy_sell(volume,currency_1, currency_2, crypto.currency,0.8,k)
+                        print("Buy", volume, "of", crypto.currency, "in", currency_2.currency, "and sell", currency_1.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
+                    #     kraken.buy_sell(volume,currency_1, currency_2, crypto.currency,0.8,k)
                     
-                    # else:
+                    else:
                     #     #no trades found that meet our criteria
-                    #     print("Hold", crypto.currency, currency.currency, "downside margin is:",currency.downside_arbitrage_USD)
+                        print("Hold", crypto.currency, currency_1.currency, "downside margin is:",currency_1.downside_arbitrage[currency_2.currency])
         
     return
