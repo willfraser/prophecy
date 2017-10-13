@@ -179,63 +179,14 @@ def buy_market(amount, pair, currency, k):
             print("purchase total")
             #make buy
             
-            try:
-                pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
-                        
-            except k.HTTPError as e:
-                status_code = e.response.status_code
-                if(int(status_code)>=500):
-                    pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
-                
-            except k.Timeout:
-                pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
-                
+            market_buy(pair, amount,k)
             
         else:
             amount = round(float(fiat_balance)/float(currency.ask_price),4)
             print("purchase reduced total")
+            
             #make buy
-            
-            try:
-                pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
-            
-            except k.HTTPError as e:
-                status_code = e.response.status_code
-                if(int(status_code)>=500):
-                    pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
-            
-            except k.Timeout:
-                pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
+            market_buy(pair, amount,k)
         
         while k.query_private('OpenOrders')['result']['open']:
                 time.sleep(.1)
@@ -255,36 +206,13 @@ def sell_all_market(pair, k):
     
     crypto = pair[0:4]
     
-    amount = float(k.query_private('Balance')['result'][crypto])
+    amount = get_balance(crypto, k)
     
     if(amount>0):
         print("Placing sell order for", amount, "of", pair)
         
         #make sell
-        try:
-            pprint(k.query_private('AddOrder',
-                        {'pair': pair,
-                         'type': 'sell',
-                         'ordertype': 'market',
-                         'volume': amount,
-                        }))
-        except k.HTTPError as e:
-            status_code = e.response.status_code
-            if(int(status_code)>=500):
-                pprint(k.query_private('AddOrder',
-                        {'pair': pair,
-                         'type': 'sell',
-                         'ordertype': 'market',
-                         'volume': amount,
-                        }))    
-            
-        except k.Timeout:
-            pprint(k.query_private('AddOrder',
-                    {'pair': pair,
-                     'type': 'sell',
-                     'ordertype': 'market',
-                     'volume': amount,
-                    }))
+        market_sell(pair, amount,k)
     
         while k.query_private('OpenOrders')['result']['open']:
             time.sleep(.1)
@@ -294,3 +222,56 @@ def sell_all_market(pair, k):
         print("Nothing to Sell")
     
     return 1
+    
+def market_sell(pair, amount,k):
+    try:
+        pprint(k.query_private('AddOrder',
+                        {'pair': pair,
+                         'type': 'sell',
+                         'ordertype': 'market',
+                         'volume': amount,
+                        }))
+                        
+    except k.HTTPError as e:
+        status_code = e.response.status_code
+        if(int(status_code)>=500):
+            time.sleep(.1)
+            market_buy(pair, amount,k)
+                
+    except k.Timeout:
+        time.sleep(.1)
+        market_buy(pair, amount,k)
+        
+def market_buy(pair, amount,k):
+    try:
+        pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'buy',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+                        
+    except k.HTTPError as e:
+        status_code = e.response.status_code
+                
+        if(int(status_code)>=500):
+            time.sleep(.1)
+            market_buy(pair,amount,k)
+                
+    except k.Timeout:
+        time.sleep(.1)
+        market_buy(pair, amount,k)
+        
+def get_balance(crypto, k):
+    
+    amt = k.query_private('Balance')
+    
+    if 'result' in amt:
+        amount = float(amt['result'][crypto])
+    else:
+        time.sleep(0.2)
+        get_balance(crypto,k)
+    
+    return amount
+    
+    
