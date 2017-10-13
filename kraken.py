@@ -233,6 +233,7 @@ def market_sell(pair, amount,k):
                         }))
                         
     except k.HTTPError as e:
+        print('market sell http error')
         status_code = e.response.status_code
         if(int(status_code)>=500):
             time.sleep(.1)
@@ -252,6 +253,7 @@ def market_buy(pair, amount,k):
                             }))
                         
     except k.HTTPError as e:
+        print('market sell http error')
         status_code = e.response.status_code
                 
         if(int(status_code)>=500):
