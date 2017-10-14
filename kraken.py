@@ -13,6 +13,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                             })
     except requests.HTTPError as e:
         status_code = e.response.status_code
+        time.sleep(0.5)
         if(int(status_code)>=500):
             values = k.query_public('Depth',
                             {'pair': pair
@@ -31,6 +32,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                             })
         except requests.HTTPError as e:
             status_code = e.response.status_code
+            time.sleep(.5)
             if(int(status_code)>=500):
                 values = k.query_public('Depth',
                                 {'pair': pair
@@ -47,12 +49,14 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                             {'pair': pair
                             })
             except requests.HTTPError as e:
+                time.sleep(.5)
                 status_code = e.response.status_code
                 if(int(status_code)>=500):
                     values = k.query_public('Depth',
                                 {'pair': pair
                                 })
             except requests.Timeout:
+                time.sleep(.5)
                 values = k.query_public('Depth',
                                 {'pair': pair
                                 })
@@ -236,11 +240,11 @@ def market_sell(pair, amount,k):
         print('market sell http error')
         status_code = e.response.status_code
         if(int(status_code)>=500):
-            time.sleep(.1)
+            time.sleep(.5)
             market_buy(pair, amount,k)
                 
     except k.Timeout:
-        time.sleep(.1)
+        time.sleep(.5)
         market_buy(pair, amount,k)
         
 def market_buy(pair, amount,k):
@@ -257,11 +261,11 @@ def market_buy(pair, amount,k):
         status_code = e.response.status_code
                 
         if(int(status_code)>=500):
-            time.sleep(.1)
+            time.sleep(.5)
             market_buy(pair,amount,k)
                 
     except k.Timeout:
-        time.sleep(.1)
+        time.sleep(.5)
         market_buy(pair, amount,k)
         
 def get_balance(crypto, k):
