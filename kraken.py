@@ -174,6 +174,8 @@ def buy_market(amount, pair, currency, k):
         fiat_balance = float(k.query_private('Balance')['result'][fiat])
     except KeyError:
         fiat_balance = float(0)
+        
+    print(fiat, "balance of", fiat_balance)
     
     total_purchase_price = float(currency.ask_price)*float(amount)
     
@@ -186,14 +188,15 @@ def buy_market(amount, pair, currency, k):
             market_buy(pair, amount,k)
             
         else:
-            amount = round(float(fiat_balance)/float(currency.ask_price),4)
+            amount = round(0.8*(float(fiat_balance)/float(currency.ask_price)),4)
             print("purchase reduced total")
             
             #make buy
             market_buy(pair, amount,k)
         
-        while k.query_private('OpenOrders')['result']['open']:
-                time.sleep(.1)
+        while is_balance(k):
+            time.sleep(.1)
+            
            
         print("Buy order for", amount, "of", pair, "filled successfully")
         
@@ -236,14 +239,14 @@ def market_sell(pair, amount,k):
                          'volume': amount,
                         }))
                         
-    except k.HTTPError as e:
+    except requests.HTTPError as e:
         print('market sell http error')
         status_code = e.response.status_code
         if(int(status_code)>=500):
             time.sleep(.5)
             market_buy(pair, amount,k)
                 
-    except k.Timeout:
+    except requests.Timeout:
         time.sleep(.5)
         market_buy(pair, amount,k)
         
@@ -256,7 +259,7 @@ def market_buy(pair, amount,k):
                              'volume': amount,
                             }))
                         
-    except k.HTTPError as e:
+    except requests.HTTPError as e:
         print('market sell http error')
         status_code = e.response.status_code
                 
@@ -264,7 +267,7 @@ def market_buy(pair, amount,k):
             time.sleep(.5)
             market_buy(pair,amount,k)
                 
-    except k.Timeout:
+    except requests.Timeout:
         time.sleep(.5)
         market_buy(pair, amount,k)
         
@@ -279,5 +282,12 @@ def get_balance(crypto, k):
         get_balance(crypto,k)
     
     return amount
+    
+def is_balance(k):
+    try: 
+        return(k.query_private('OpenOrders')['result']['open'])
+        
+    except KeyError:
+        is_balance(k)
     
     
