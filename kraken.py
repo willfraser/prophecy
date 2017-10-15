@@ -5,7 +5,10 @@ import requests
 
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
-    pair="X"+crypto_currency+"Z"+fiat_currency.currency
+    
+    # print(k.query_public('AssetPairs'))
+    
+    pair=crypto_currency.symbol+fiat_currency.currency
     
     try:
         values = k.query_public('Depth',
@@ -24,7 +27,6 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                             {'pair': pair
                             })
         
-    
     while(len(values["result"][pair]["bids"])<0):
         try:
             values = k.query_public('Depth',
@@ -60,7 +62,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                 values = k.query_public('Depth',
                                 {'pair': pair
                                 })
-            
+                                
     fiat_currency.ask_price = values["result"][pair]["asks"][0].pop(0)
     fiat_currency.ask_price = float(fiat_currency.ask_price) * float(fiat_currency.exchange_USD)
     fiat_currency.ask_volume = values["result"][pair]["asks"][0].pop(0)

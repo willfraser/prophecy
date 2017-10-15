@@ -16,6 +16,7 @@ class Fiat:
         self.bid_volume = 0
         self.upside_arbitrage = {}
         self.downside_arbitrage = {}
+        self.fiats = []
 
 class Crypto:
     
@@ -42,20 +43,67 @@ def set_split():
     USD = Fiat("USD")
     print("USD_USD", USD.exchange_USD)
     
-    my_currencies = [USD, CAD, EUR, GBP, JPY]
+    all_currencies = [USD, CAD, EUR, GBP, JPY]
+    core_currencies = [USD, EUR]
+    
     
     ETH = Crypto("ETH")
+    ETH.fiats = all_currencies
+    ETH.symbol = "XETHZ"
     print("ETH Initialized")
     
     XBT = Crypto("XBT")
+    XBT.fiats = all_currencies
+    XBT.symbol = "XXBTZ"
     print("XBT Initilaized")
     
-    my_cryptos = [ETH, XBT]
+    BCH = Crypto("BCH")
+    BCH.fiats = core_currencies
+    BCH.symbol = "BCH"
+    print("BCH Initilaized")
+    
+    #ToDo this may cause problems due to being 4 characters long
+    DASH = Crypto("DASH")
+    DASH.fiats = core_currencies
+    DASH.symbol = "DASH"
+    print("DASH Initilaized")
+    
+    ETC = Crypto("ETC")
+    ETC.fiats = core_currencies
+    ETC.symbol = "XETCZ"
+    print("ETC Initilaized")
+    
+    LTC = Crypto("LTC")
+    LTC.fiats = core_currencies
+    LTC.symbol = "XLTCZ"
+    print("LTC Initilaized")
+
+    REP = Crypto("REP")
+    REP.fiats = core_currencies
+    REP.symbol = "XREPZ"
+    print("REP Initilaized")
+    
+    XMR = Crypto("XMR")
+    XMR.fiats = core_currencies
+    XMR.symbol = "XXMRZ"
+    print("XMR Initilaized")
+    
+    XRP = Crypto("XRP")
+    XRP.fiats = core_currencies
+    XRP.symbol = "XXRPZ"
+    print("XRP Initilaized")
+    
+    ZEC = Crypto("ZEC")
+    ZEC.fiats = core_currencies
+    ZEC.symbol = "XZECZ"
+    print("ZEC Initilaized")
+    
+    my_cryptos = [ETH, XBT, BCH, ETC, LTC, XMR, XRP, ZEC]
     
     k = kraken_api.API()
     k.load_key('kraken.key')
     
-    return [my_currencies,my_cryptos,k]
+    return [all_currencies,my_cryptos,k]
 
 def update_exchange(currency):
     
@@ -68,18 +116,20 @@ def update_exchange(currency):
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
+    
+    
     # for currency in currencies:
     #     update_exchange(currency)
     
     for crypto in cryptos:
     
         #get currency bids and asks for all currencies
-        for currency in currencies:
-            kraken.get_ask_bid(currency,crypto.currency,k)
+        for currency in crypto.fiats:
+            kraken.get_ask_bid(currency,crypto,k)
     
         #calculate USD arbitrage margin    
-        for currency_1 in currencies:
-            for currency_2 in currencies:
+        for currency_1 in crypto.fiats:
+            for currency_2 in crypto.fiats:
                 #(price currency is being bought at) - (price USD is being sold at) / (price USD is being sold at)
                 currency_1.upside_arbitrage[currency_2.currency] = ((float(currency_2.bid_price) - float(currency_1.ask_price))/float(currency_1.ask_price))-trans_fee
                 
@@ -89,8 +139,8 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
         #begin trading evaluation and execution    
         print(datetime.datetime.now().time())    
         
-        for currency_1 in currencies:
-            for currency_2 in currencies:
+        for currency_1 in crypto.fiats:
+            for currency_2 in crypto.fiats:
                 #if currency is USD ignore    
                 if(currency_1.currency != currency_2.currency):
                     
