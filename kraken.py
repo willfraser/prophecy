@@ -172,11 +172,9 @@ def buy_market(amount, pair, currency, k):
     
     fiat = pair[4:8]
 
-    try:
-        fiat_balance = float(k.query_private('Balance')['result'][fiat])
-    except KeyError:
-        fiat_balance = float(0)
-        
+    
+    fiat_balance = get_fiat_balance(fiat,k)
+    
     print(fiat, "balance of", fiat_balance)
     
     total_purchase_price = float(currency.ask_price)*float(amount)
@@ -223,7 +221,7 @@ def sell_all_market(pair, k):
         #make sell
         market_sell(pair, amount,k)
     
-        while k.query_private('OpenOrders')['result']['open']:
+        while is_open_order(k):
             time.sleep(.1)
         
         print("Sell order for", amount, "of", pair, "filled successfully")
@@ -275,7 +273,20 @@ def market_buy(pair, amount,k):
         
 def get_balance(crypto, k):
     
-    amt = k.query_private('Balance')
+    try:
+        amt = k.query_private('Balance')
+        
+    except requests.HTTPError as e:
+        status_code = e.response.status_code
+                
+        if(int(status_code)>=500):
+            time.sleep(.5)
+            amt = get_balance(crypto, k)
+                
+    except requests.Timeout:
+        time.sleep(.5)
+        amt = get_balance(crypto, k)    
+
     
     if 'result' in amt:
         amount = float(amt['result'][crypto])
@@ -291,5 +302,47 @@ def is_balance(k):
         
     except KeyError:
         is_balance(k)
+
+def get_fiat_balance(fiat,k):
     
+    try:
+        balance = k.query_private('Balance')['result'][fiat]
+    
+    except KeyError:
+        balance = float(0)
+    
+    except requests.HTTPError as e:
+        status_code = e.response.status_code
+                
+        if(int(status_code)>=500):
+            time.sleep(.5)
+            balance = get_fiat_balance(fiat,k)
+                
+    except requests.Timeout:
+        time.sleep(.5)
+        balance = get_fiat_balance(fiat,k)
+    
+    
+    return balance
+    
+def is_open_order(k):
+        
+    try:
+        open = k.query_private('OpenOrders')['result']['open']
+        
+    except KeyError:
+          open = 0
+        
+    except requests.HTTPError as e:
+        status_code = e.response.status_code
+                    
+        if(int(status_code)>=500):
+            time.sleep(.5)
+            open = is_open_order(k)
+                    
+    except requests.Timeout:
+        time.sleep(.5)
+        open = is_open_order(k)
+            
+    return open
     
