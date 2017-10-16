@@ -244,11 +244,11 @@ def market_sell(pair, amount,k):
         status_code = e.response.status_code
         if(int(status_code)>=500):
             time.sleep(.5)
-            market_buy(pair, amount,k)
+            market_sell(pair, amount,k)
                 
     except requests.Timeout:
         time.sleep(.5)
-        market_buy(pair, amount,k)
+        market_sell(pair, amount,k)
         
 def market_buy(pair, amount,k):
     try:
@@ -286,7 +286,6 @@ def get_balance(crypto, k):
     except requests.Timeout:
         time.sleep(.5)
         amt = get_balance(crypto, k)    
-
     
     if 'result' in amt:
         amount = float(amt['result'][crypto])
@@ -302,6 +301,17 @@ def is_balance(k):
         
     except KeyError:
         is_balance(k)
+    
+    except requests.HTTPError as e:
+        status_code = e.response.status_code
+                
+        if(int(status_code)>=500):
+            time.sleep(.5)
+            return(is_balance(k))
+                
+    except requests.Timeout:
+        time.sleep(.5)
+        return(is_balance(k))
 
 def get_fiat_balance(fiat,k):
     
