@@ -173,7 +173,7 @@ def buy_market(amount, pair, currency, k):
     fiat = pair[4:8]
 
     
-    fiat_balance = get_fiat_balance(fiat,k)
+    fiat_balance = float(get_fiat_balance(fiat,k))
     
     print(fiat, "balance of", fiat_balance)
     
