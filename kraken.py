@@ -143,7 +143,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
 
 def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margin,k):
     
-    minimum_order = 0.2
+    minimum_order = 0.01
     
     #safety adjust trade volume
     amount = float(amount) * float(saftey_margin)
