@@ -62,12 +62,13 @@ def set_split():
     ETH.fiats = all_currencies
     ETH.crypto_pairs = ["EOS"]
     ETH.symbol = "XETH"
-    
+    ETH.min_order = 0.02
     print("ETH Initialized")
     
     XBT = Crypto("XBT")
     XBT.fiats = all_currencies
     XBT.symbol = "XXBT"
+    XBT.min_order = 0.002
     print("XBT Initilaized")
     
     BCH = Crypto("BCH")
@@ -111,7 +112,7 @@ def set_split():
     ZEC.symbol = "XZEC"
     print("ZEC Initilaized")
     
-    my_cryptos = [ETH, XBT, ETC, LTC, XMR, XRP, ZEC, BCH, DASH]
+    my_cryptos = [ETH, XBT, ETC, LTC, XMR, XRP, ZEC, BCH]
     
     k = kraken_api.API()
     k.load_key('kraken.key')
