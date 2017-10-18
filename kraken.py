@@ -304,7 +304,7 @@ def get_balance(crypto, k):
         amt = get_balance(crypto, k)    
     
     if 'result' in amt:
-        amount = float(amt['result'])
+        amount = amt['result']
         if crypto.symbol in amount:
             amount = float(amt[crypto.symbol])
         else:
