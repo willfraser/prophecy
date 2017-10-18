@@ -219,6 +219,7 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
     
 def sell_all_market(crypto, pair, k):
     
+    print("preparing to sell all market")
     while(get_balance(crypto, k)):
     
         amount = get_balance(crypto, k)
@@ -292,6 +293,7 @@ def get_balance(crypto, k):
     try:
         amt = k.query_private('Balance')
         
+        
     except requests.HTTPError as e:
         status_code = e.response.status_code
                 
@@ -306,7 +308,8 @@ def get_balance(crypto, k):
     if 'result' in amt:
         amount = amt['result']
         if crypto.symbol in amount:
-            amount = float(amt[crypto.symbol])
+            print(amount)
+            amount = float(amount[crypto.symbol])
         else:
             time.sleep(0.2)
             get_balance(crypto,k)
