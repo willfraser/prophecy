@@ -11,9 +11,10 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
     
     if(crypto_currency.symbol!="BCH" or crypto_currency.symbol!="DASH"):
         pair=crypto_currency.symbol+fiat_currency.symbol
+        print(pair)
     else:
         pair=crypto_currency.symbol+fiat_currency.symbol[1:3]
-    
+        print(pair)
     
     try:
         values = k.query_public('Depth',
