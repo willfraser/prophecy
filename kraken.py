@@ -276,7 +276,7 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
                             }))
                         
     except requests.HTTPError as e:
-        print('market sell http error')
+        print('market buy http error')
         status_code = e.response.status_code
                 
         if(int(status_code)>=500):
