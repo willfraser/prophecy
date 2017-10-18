@@ -228,9 +228,8 @@ def sell_all_market(crypto, pair, k):
             
             #make sell
             market_sell(pair, amount,k)
-        
-            while is_open_order(k):
-                time.sleep(.5)
+            
+            time.sleep(.5)
             
             print("Sell order for", amount, "of", pair, "filled successfully")
         else:
@@ -305,11 +304,13 @@ def get_balance(crypto, k):
         amt = get_balance(crypto, k)    
     
     if 'result' in amt:
-        amount = float(amt['result'][crypto])
-    else:
-        time.sleep(0.2)
-        get_balance(crypto,k)
-    
+        amount = float(amt['result'])
+        if crypto.symbol in amount:
+            amount = float(amt[crypto.symbol])
+        else:
+            time.sleep(0.2)
+            get_balance(crypto,k)
+        
     return amount
     
 def is_balance(k):
