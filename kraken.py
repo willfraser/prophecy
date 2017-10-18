@@ -264,6 +264,8 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
     
     print("market buy", amount)
     
+    amount = rount(amount,4)
+    
     
     try:
         pprint(k.query_private('AddOrder',
