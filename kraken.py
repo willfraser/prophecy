@@ -8,13 +8,13 @@ import json
 def get_ask_bid(fiat_currency,crypto_currency,k):
     
     # print(k.query_public('AssetPairs'))
-    
-    if(crypto_currency.symbol!="BCH" or crypto_currency.symbol!="DASH"):
+    print("get ask bid")
+    if(crypto_currency.symbol != "BCH" and crypto_currency.symbol!="DASH"):
         pair=crypto_currency.symbol+fiat_currency.symbol
-        print(pair)
+        # print(pair)
     else:
-        pair=crypto_currency.symbol+fiat_currency.symbol[1:3]
-        print(pair)
+        pair=crypto_currency.symbol+fiat_currency.symbol[1:4]
+        # print("BCH or DASH", pair)
     
     try:
         values = k.query_public('Depth',
