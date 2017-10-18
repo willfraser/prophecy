@@ -219,9 +219,9 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
     
 def sell_all_market(crypto, pair, k):
     
-    while(get_balance(crypto.symbol, k)):
+    while(get_balance(crypto, k)):
     
-        amount = get_balance(crypto.symbol, k)
+        amount = get_balance(crypto, k)
         
         if(amount>0):
             print("Placing sell order for", amount, "of", pair)
