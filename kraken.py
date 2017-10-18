@@ -310,6 +310,9 @@ def get_balance(crypto, k):
         else:
             time.sleep(0.2)
             get_balance(crypto,k)
+    else:
+            time.sleep(0.2)
+            get_balance(crypto,k)
         
     return amount
     
