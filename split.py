@@ -74,42 +74,50 @@ def set_split():
     BCH = Crypto("BCH")
     BCH.fiats = core_currencies
     BCH.symbol = "BCH"
+    BCH.min_order = 0.002
     print("BCH Initilaized")
     
     #ToDo this may cause problems due to being 4 characters long
     DASH = Crypto("DASH")
     DASH.fiats = core_currencies
     DASH.symbol = "DASH"
+    DASH.min_order = 0.03
     print("DASH Initilaized")
     
     ETC = Crypto("ETC")
     ETC.fiats = core_currencies
     ETC.symbol = "XETC"
+    ETC.min_order = 0.3
     print("ETC Initilaized")
     
     LTC = Crypto("LTC")
     LTC.fiats = core_currencies
     LTC.symbol = "XLTC"
+    LTC.min_order = 0.1
     print("LTC Initilaized")
 
     REP = Crypto("REP")
     REP.fiats = core_currencies
     REP.symbol = "XREP"
+    REP.min_order = 0.3
     print("REP Initilaized")
     
     XMR = Crypto("XMR")
     XMR.fiats = core_currencies
     XMR.symbol = "XXMR"
+    XMR.min_order = 0.1
     print("XMR Initilaized")
     
     XRP = Crypto("XRP")
     XRP.fiats = core_currencies
     XRP.symbol = "XXRP"
+    XRP.min_order = 30
     print("XRP Initilaized")
     
     ZEC = Crypto("ZEC")
     ZEC.fiats = core_currencies
     ZEC.symbol = "XZEC"
+    ZEC.min_order = 0.03
     print("ZEC Initilaized")
     
     my_cryptos = [ETH, XBT, ETC, LTC, XMR, XRP, ZEC, BCH]
