@@ -14,6 +14,8 @@ k = b[2] #set k to kraken
 print("Buy in USD if upside margin is greated than", upside)
 print("Sell back to USD if downside margin is less than", downside)
 
+# split.auto_split(k)
+
 #runs the selected algorithm continually at the specified "steps" or seconds
 polling.poll(
 lambda: split.run(upside, downside, 0.0044, f, c, k),

@@ -6,7 +6,7 @@ import kraken_api
 #An object to represent any Fiat currency with the required meta-data
 class Fiat:
     
-    def __init__(self,currency):
+    def __init__(self,currency,symbol):
         self.currency = currency
         self.exchange_USD = exchange.get_exchanged_value(1, "USD", currency)
         self.balance = 0
@@ -17,6 +17,7 @@ class Fiat:
         self.upside_arbitrage = {}
         self.downside_arbitrage = {}
         self.fiats = []
+        self.symbol = symbol
 
 class Crypto:
     
@@ -28,19 +29,29 @@ class Crypto:
         self.bid_price = 0.0
         self.bid_volume = 0
         self.trade_fee = 0.024
+        self.symbol = ""
+        
+class Trade_Pair:
+    
+    def __init__(self,pair, pair_decimals,base, quote, fee_volume_currency):
+        self.pair = pair
+        self.pair_decimals = pair_decimals
+        self.base = base
+        self.quote = quote
+        self.fee_volume_currency = fee_volume_currency
     
 #Create curriences and get USD exchange rate
 def set_split():
   
-    CAD = Fiat("CAD")
+    CAD = Fiat("CAD","ZCAD")
     print("CAD_USD", CAD.exchange_USD)
-    GBP = Fiat("GBP")
+    GBP = Fiat("GBP","ZGBP")
     print("GBP_USD", GBP.exchange_USD)
-    EUR = Fiat("EUR")
+    EUR = Fiat("EUR","ZEUR")
     print("EUR_USD", EUR.exchange_USD)
-    JPY = Fiat("JPY")
+    JPY = Fiat("JPY","ZJPY")
     print("EUR_USD", EUR.exchange_USD)
-    USD = Fiat("USD")
+    USD = Fiat("USD","ZUSD")
     print("USD_USD", USD.exchange_USD)
     
     all_currencies = [USD, CAD, EUR, GBP, JPY]
@@ -49,12 +60,14 @@ def set_split():
     
     ETH = Crypto("ETH")
     ETH.fiats = all_currencies
-    ETH.symbol = "XETHZ"
+    ETH.crypto_pairs = ["EOS"]
+    ETH.symbol = "XETH"
+    
     print("ETH Initialized")
     
     XBT = Crypto("XBT")
     XBT.fiats = all_currencies
-    XBT.symbol = "XXBTZ"
+    XBT.symbol = "XXBT"
     print("XBT Initilaized")
     
     BCH = Crypto("BCH")
@@ -70,35 +83,35 @@ def set_split():
     
     ETC = Crypto("ETC")
     ETC.fiats = core_currencies
-    ETC.symbol = "XETCZ"
+    ETC.symbol = "XETC"
     print("ETC Initilaized")
     
     LTC = Crypto("LTC")
     LTC.fiats = core_currencies
-    LTC.symbol = "XLTCZ"
+    LTC.symbol = "XLTC"
     print("LTC Initilaized")
 
     REP = Crypto("REP")
     REP.fiats = core_currencies
-    REP.symbol = "XREPZ"
+    REP.symbol = "XREP"
     print("REP Initilaized")
     
     XMR = Crypto("XMR")
     XMR.fiats = core_currencies
-    XMR.symbol = "XXMRZ"
+    XMR.symbol = "XXMR"
     print("XMR Initilaized")
     
     XRP = Crypto("XRP")
     XRP.fiats = core_currencies
-    XRP.symbol = "XXRPZ"
+    XRP.symbol = "XXRP"
     print("XRP Initilaized")
     
     ZEC = Crypto("ZEC")
     ZEC.fiats = core_currencies
-    ZEC.symbol = "XZECZ"
+    ZEC.symbol = "XZEC"
     print("ZEC Initilaized")
     
-    my_cryptos = [ETH, XBT, BCH, ETC, LTC, XMR, XRP, ZEC]
+    my_cryptos = [ETH, XBT, ETC, LTC, XMR, XRP, ZEC]
     
     k = kraken_api.API()
     k.load_key('kraken.key')
@@ -115,8 +128,6 @@ def update_exchange(currency):
 #ask = selling price (price at which you can buy the instrument)
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
-    
-    
     
     # for currency in currencies:
     #     update_exchange(currency)
@@ -160,7 +171,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         #triggers the buy action with a safety factor to again insure we don't get stuck with 
                         #extra currency
                         print("Buy", volume, "of", crypto.currency, "in", currency_1.currency, "and sell", currency_2.currency, "for a margin of", currency_1.upside_arbitrage[currency_2.currency])
-                        kraken.buy_sell(volume, currency_1, currency_2, crypto.currency, 0.8,k)
+                        kraken.buy_sell(volume, currency_1, currency_2, crypto, 0.8,k)
                     else:
                         #no trades found that meet our criteria
                         print("Hold", crypto.currency, currency_1.currency, "through", currency_2.currency, "upside margin is:", currency_1.upside_arbitrage[currency_2.currency])
@@ -182,5 +193,49 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         else:
                         #     #no trades found that meet our criteria
                             print("Hold", crypto.currency, currency_1.currency, "downside margin is:",currency_1.downside_arbitrage[currency_2.currency])
+            
+    return
+
+def auto_split(k):
+    
+    values = kraken.get_all_pairs(k)
+    
+    pairs = values['result']
+    print(pairs)
+    
+    my_trade_pairs = []
+        
+    for pair in pairs:
+      
+        print("Pair", pair)
+        # print("Quote", pairs[pair]['quote'])
+        # print("Base", pairs[pair]['base'])
+        # print("Pair Decimals", pairs[pair]['pair_decimals'])
+        # print("Fee volume currency", pairs[pair]['fee_volume_currency'])
+        
+        quote = pairs[pair]['quote']
+        base = pairs[pair]['base']
+        pair_decimals =  pairs[pair]['pair_decimals']
+        fee_volume_currency = pairs[pair]['fee_volume_currency']
+        
+        pair = Trade_Pair(pair, pair_decimals, base, quote, fee_volume_currency) 
+        
+        my_trade_pairs.append(pair) 
+    
+    for trade_pair in my_trade_pairs:
+    
+        if(trade_pair.base[0]=='z'):
+            print("fiat")
+    
+        # for trade_pair2 in my_trade_pairs:
+            
+        #     if (trade_pair2.base == trade_pair.quote) or (trade_pair2.base == trade_pair.base) or (trade_pair2.quote == trade_pair.quote) or (trade_pair2.quote == trade_pair.base):
+                
+        #         for trade_pair3 in my_trade_pairs:
+                
+        #             if (trade_pair3.base == trade_pair2.quote) or (trade_pair3.base == trade_pair2.base) or (trade_pair3.quote == trade_pair2.quote) or (trade_pair3.quote == trade_pair2.base):
+                
+                        # print (trade_pair3.pair, trade_pair2.pair, trade_pair.pair)
+        
             
     return

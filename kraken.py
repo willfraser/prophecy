@@ -1,6 +1,7 @@
 from pprint import pprint
 import time 
 import requests
+import json
 
 
 #get the 1st bid and 1st ask of any specified currency
@@ -8,7 +9,8 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
     
     # print(k.query_public('AssetPairs'))
     
-    pair=crypto_currency.symbol+fiat_currency.currency
+    pair=crypto_currency.symbol+fiat_currency.symbol
+    
     
     try:
         values = k.query_public('Depth',
@@ -149,35 +151,34 @@ def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margi
     amount = float(amount) * float(saftey_margin)
     
     #setup pairs 
-    buy_pair = "X"+transfer_currency+"Z"+buy_currency.currency
-    sell_pair = "X"+transfer_currency+"Z"+sell_currency.currency
+    buy_pair = transfer_currency.symbol+buy_currency.symbol
+    sell_pair = transfer_currency.symbol+sell_currency.symbol
     
     if(amount < minimum_order):
         print("less than min order")
         return 0
     else:
         #buy at market price
-        if(buy_market(amount, buy_pair, buy_currency, k)):
+        if(buy_market(amount, buy_pair, buy_currency, transfer_currency, k)):
             #sell all currency
-            sell_all_market(sell_pair, k )
+            sell_all_market(transfer_currency, sell_pair, k )
                     
         return 1
         
-def buy_market(amount, pair, currency, k):
+def buy_market(amount, pair, buy_fiat, crypto, k):
     
     print("Placing buy order for", amount, "of", pair)
     
-    if((float(currency.ask_price)*float(amount))>800.0):
-        amount=800.0/float(currency.ask_price)
+    if((float(crypto.ask_price)*float(amount))>800.0):
+        amount=800.0/float(crypto.ask_price)
     
-    fiat = pair[4:8]
-
+    fiat = buy_fiat.symbol
     
     fiat_balance = float(get_fiat_balance(fiat,k))
     
     print(fiat, "balance of", fiat_balance)
     
-    total_purchase_price = float(currency.ask_price)*float(amount)
+    total_purchase_price = float(crypto.ask_price)*float(amount)
     
     if(fiat_balance>10):
     
@@ -185,14 +186,14 @@ def buy_market(amount, pair, currency, k):
             print("purchase total")
             #make buy
             
-            market_buy(pair, amount,k)
+            market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
             
         else:
-            amount = round(0.8*(float(fiat_balance)/float(currency.ask_price)),4)
+            amount = round(0.8*(float(fiat_balance)/float(crypto.ask_price)),4)
             print("purchase reduced total")
             
             #make buy
-            market_buy(pair, amount,k)
+            market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
         
         while is_balance(k):
             time.sleep(.1)
@@ -209,11 +210,11 @@ def buy_market(amount, pair, currency, k):
     
     
     
-def sell_all_market(pair, k):
+def sell_all_market(crypto, pair, k):
     
-    crypto = pair[0:4]
     
-    amount = get_balance(crypto, k)
+    
+    amount = get_balance(crypto.symbol, k)
     
     if(amount>0):
         print("Placing sell order for", amount, "of", pair)
@@ -250,7 +251,10 @@ def market_sell(pair, amount,k):
         time.sleep(.5)
         market_sell(pair, amount,k)
         
-def market_buy(pair, amount,k):
+def market_buy(fiat_symbol, crypto_symbol, amount,k):
+    
+    pair = crypto_symbol+fiat_symbol
+    
     try:
         pprint(k.query_private('AddOrder',
                             {'pair': pair,
@@ -265,11 +269,11 @@ def market_buy(pair, amount,k):
                 
         if(int(status_code)>=500):
             time.sleep(.5)
-            market_buy(pair,amount,k)
+            market_buy(fiat_symbol, crypto_symbol, amount,k)
                 
     except requests.Timeout:
         time.sleep(.5)
-        market_buy(pair, amount,k)
+        market_buy(fiat_symbol, crypto_symbol, amount,k)
         
 def get_balance(crypto, k):
     
@@ -355,4 +359,23 @@ def is_open_order(k):
         open = is_open_order(k)
             
     return open
+    
+    
+def get_all_pairs(k):
+    
+    try:
+        values = k.query_public('AssetPairs')
+        
+        return values
+        
+    except requests.HTTPError as e:
+        status_code = e.response.status_code
+                    
+        if(int(status_code)>=500):
+            time.sleep(.5)
+            pairs = get_all_pairs(k)
+                    
+    except requests.Timeout:
+        time.sleep(.5)
+        pairs = get_all_pairs(k)
     
