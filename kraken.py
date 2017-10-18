@@ -219,23 +219,24 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
     
 def sell_all_market(crypto, pair, k):
     
+    while(get_balance(crypto.symbol, k)):
     
-    
-    amount = get_balance(crypto.symbol, k)
-    
-    if(amount>0):
-        print("Placing sell order for", amount, "of", pair)
+        amount = get_balance(crypto.symbol, k)
         
-        #make sell
-        market_sell(pair, amount,k)
-    
-        while is_open_order(k):
-            time.sleep(.1)
+        if(amount>0):
+            print("Placing sell order for", amount, "of", pair)
+            
+            #make sell
+            market_sell(pair, amount,k)
         
-        print("Sell order for", amount, "of", pair, "filled successfully")
-    else:
-        print("Nothing to Sell")
+            while is_open_order(k):
+                time.sleep(.1)
+            
+            print("Sell order for", amount, "of", pair, "filled successfully")
+        else:
+            print("Nothing to Sell")
     
+    print("Sale complete")
     return 1
     
 def market_sell(pair, amount,k):
