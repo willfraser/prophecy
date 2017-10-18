@@ -148,14 +148,18 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
 
 def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margin,k):
     
-    minimum_order = 0.01
+    minimum_order = 0.02
     
     #safety adjust trade volume
     amount = float(amount) * float(saftey_margin)
     
-    #setup pairs 
-    buy_pair = transfer_currency.symbol+buy_currency.symbol
-    sell_pair = transfer_currency.symbol+sell_currency.symbol
+    #setup pairs
+    if(transfer_currency.symbol != "BCH" and transfer_currency.symbol!="DASH"):
+        buy_pair = transfer_currency.symbol+buy_currency.symbol
+        sell_pair = transfer_currency.symbol+sell_currency.symbol
+    else:
+        buy_pair = transfer_currency.symbol+buy_currency.symbol[1:4]
+        sell_pair = transfer_currency.symbol+sell_currency.symbol[1:4]
     
     if(amount < minimum_order):
         print("less than min order")
@@ -257,6 +261,9 @@ def market_sell(pair, amount,k):
 def market_buy(fiat_symbol, crypto_symbol, amount,k):
     
     pair = crypto_symbol+fiat_symbol
+    
+    print("market buy", amount)
+    
     
     try:
         pprint(k.query_private('AddOrder',
