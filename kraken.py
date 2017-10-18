@@ -230,7 +230,7 @@ def sell_all_market(crypto, pair, k):
             market_sell(pair, amount,k)
         
             while is_open_order(k):
-                time.sleep(.1)
+                time.sleep(.5)
             
             print("Sell order for", amount, "of", pair, "filled successfully")
         else:
