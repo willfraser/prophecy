@@ -198,7 +198,18 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                             #extra currency
                             print("Buy", volume, "of", crypto.currency, "in", currency_2.currency, "and sell", currency_1.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
                             kraken.buy_sell(volume,currency_2, currency_1, crypto,0.8,k)
-                        
+                    elif(currency_1.currency == "CAD"):
+                        if(float(currency_2.upside_arbitrage[currency_1.currency])>(float(target_up))):
+                            print("CAD UPSIDE op found")
+                            if(currency_1.bid_volume < currency_2.ask_volume):
+                                volume = currency_1.bid_volume
+                            else:
+                                volume = currency_2.ask_volume
+                            
+                            #triggers the buy action with a safety factor to again insure we don't get stuck with 
+                            #extra currency
+                            print("Buy", volume, "of", crypto.currency, "in", currency_2.currency, "and sell", currency_1.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
+                            # kraken.buy_sell(volume,currency_2, currency_1, crypto,0.8,k)
                         else:
                         #     #no trades found that meet our criteria
                             print("Hold", crypto.currency, currency_1.currency, "downside margin is:",currency_1.downside_arbitrage[currency_2.currency])
