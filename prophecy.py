@@ -7,9 +7,8 @@ downside = input("Enter the minimum downside percentage in decemail I.E. 1% is 0
 
 while downside <-.001 and confirm == "n":
     confirm = input("Are you sure you want downside to be", downside, "which is less than -.001")
-    if confirm = "y" or "Y":
-        print = "confirmed"
-            confirm = "y"
+    if confirm == "y" or "Y":
+        print("confirmed")
     else:
         confirm = "n"
     
