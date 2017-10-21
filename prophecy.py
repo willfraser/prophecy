@@ -5,7 +5,7 @@ confirm = "n"
 upside = input("Enter the minimum upside percentage in decemail I.E. 1% is 0.01 :")
 downside = input("Enter the minimum downside percentage in decemail I.E. 1% is 0.01 :")
 
-while downside < -.001 and confirm == "n":
+while float(downside) < -.001 and confirm == "n":
     confirm = input("Are you sure you want downside to be", downside, "which is less than -.001")
     if str(confirm) == "y" or str(confirm) == "Y":
         print("confirmed")
