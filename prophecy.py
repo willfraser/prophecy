@@ -2,8 +2,8 @@ import polling
 import split
 
 confirm = "n"
-upside = input("Enter the minimum upside percentage in decemail I.E. 1% is 0.01 :")
-downside = input("Enter the minimum downside percentage in decemail I.E. 1% is 0.01 :")
+upside = input("Enter the minimum upside percentage in decimal I.E. 1% is 0.01 :")
+downside = input("Enter the minimum downside percentage in decimal I.E. 1% is 0.01 :")
 
 while float(downside) < -.001 and confirm == "n":
     confirm = input("Are you sure you want downside to be", downside, "which is less than -.001")
