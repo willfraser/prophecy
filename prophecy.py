@@ -27,7 +27,7 @@ split.auto_split(k)
 
 #runs the selected algorithm continually at the specified "steps" or seconds
 polling.poll(
-lambda: split.run(upside, downside, 0.004, f, c, k),
+lambda: split.run(upside, downside, 0.0036, f, c, k),
 step=5,
 poll_forever=True)
     
