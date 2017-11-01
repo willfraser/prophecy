@@ -153,6 +153,9 @@ def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margi
     #safety adjust trade volume
     amount = float(amount) * float(saftey_margin)
     
+    if(amount>1000):
+        amount = 1000
+    
     #setup pairs
     if(transfer_currency.symbol != "BCH" and transfer_currency.symbol!="DASH"):
         buy_pair = transfer_currency.symbol+buy_currency.symbol
@@ -174,10 +177,10 @@ def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margi
         
 def buy_market(amount, pair, buy_fiat, crypto, k):
     
-    print("Placing buy order for", amount, "of", pair)
-    
     if((float(crypto.ask_price)*float(amount))>800.0):
         amount=800.0/float(crypto.ask_price)
+    
+    print("Placing buy order for", amount, "of", pair)
     
     fiat = buy_fiat.symbol
     

@@ -28,7 +28,7 @@ class Crypto:
         self.ask_volume = 0.0 
         self.bid_price = 0.0
         self.bid_volume = 0
-        self.trade_fee = 0.024
+        self.trade_fee = 0.02
         self.symbol = ""
         
 class Trade_Pair:
@@ -214,6 +214,14 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                     #     #     #no trades found that meet our criteria
                             print("Hold", crypto.currency, currency_1.currency, "downside margin is:",currency_1.downside_arbitrage[currency_2.currency])
             
+    # for crypto in cryptos:
+    
+        # #get currency bids and asks for all currencies
+        # for currency in crypto.fiats:
+        #     kraken.get_ask_bid(currency,crypto,k)        
+    
+    # multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k)
+    
     return
 
 def auto_split(k):
@@ -258,4 +266,37 @@ def auto_split(k):
                         # print (trade_pair3.pair, trade_pair2.pair, trade_pair.pair)
         
             
+    return
+
+def multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k):
+    
+    print("starting crypto split test")
+    
+    for crypto_1 in cryptos:
+        
+        kraken.get_ask_bid(currencies[0],crypto_1,k)
+        print(crypto_1.symbol, "Selling at", crypto_1.fiats[0].ask_price)
+            
+        for crypto_2 in cryptos:
+                
+            #get currency bids and asks for all currencies
+            kraken.get_ask_bid(currencies[0],crypto_2,k)
+                
+            if crypto_1 != crypto_2:
+                
+                
+                print(crypto_2.symbol, "Buying at", crypto_2.fiats[0].bid_price)
+                    
+                split = ((crypto_1.fiats[0].ask_price - crypto_2.fiats[0].bid_price)/crypto_1.fiats[0].ask_price) - (trans_fee * 3)
+    
+                print("percentage split between", crypto_1.symbol, "and", crypto_2.symbol, "is", split)
+    
+                
+        
+    # ETH_XBT_Split = ((cryptos["ETH"].ask_price - cryptos.XBT.bid_price)/cryptos.ETH.ask_price)-(trans_fee*3)
+    # print("ETH to XBT split is", ETH_XBT_Split)
+    
+    # XBT_ETH_Split = ((cryptos.XBT.ask_price - cryptos.ETH.bid_price)/cryptos.XBT.ask_price)-(trans_fee*3)
+    # print("XBT to ETH split is", XBT_ETH_Split)
+    
     return
