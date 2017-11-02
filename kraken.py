@@ -270,26 +270,34 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
     
     amount = round(amount,4)
     
-    
-    try:
-        pprint(k.query_private('AddOrder',
-                            {'pair': pair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': amount,
-                            }))
+    if is_balance(k):
+        print("order outstanding")
+    else:
+        try:
+            pprint(k.query_private('AddOrder',
+                                {'pair': pair,
+                                 'type': 'buy',
+                                 'ordertype': 'market',
+                                 'volume': amount,
+                                }))
+                            
+        except requests.HTTPError as e:
+            print('market buy http error')
+            status_code = e.response.status_code
+                    
+            if(int(status_code)>=500):
+                if is_balance(k):
+                    print("order outstanding")
+                else:
+                    time.sleep(.5)
+                    market_buy(fiat_symbol, crypto_symbol, amount,k)
                         
-    except requests.HTTPError as e:
-        print('market buy http error')
-        status_code = e.response.status_code
-                
-        if(int(status_code)>=500):
-            time.sleep(.5)
-            market_buy(fiat_symbol, crypto_symbol, amount,k)
-                
-    except requests.Timeout:
-        time.sleep(.5)
-        market_buy(fiat_symbol, crypto_symbol, amount,k)
+        except requests.Timeout:
+            if is_balance(k):
+                    print("order outstanding")
+            else:
+                time.sleep(.5)
+                market_buy(fiat_symbol, crypto_symbol, amount,k)
         
 def get_balance(crypto, k):
     
