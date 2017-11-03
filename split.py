@@ -204,50 +204,6 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
     return
 
-def auto_split(k):
-    
-    values = kraken.get_all_pairs(k)
-    
-    pairs = values['result']
-    print(pairs)
-    
-    my_trade_pairs = []
-        
-    for pair in pairs:
-      
-        print("Pair", pair)
-        # print("Quote", pairs[pair]['quote'])
-        # print("Base", pairs[pair]['base'])
-        # print("Pair Decimals", pairs[pair]['pair_decimals'])
-        # print("Fee volume currency", pairs[pair]['fee_volume_currency'])
-        
-        quote = pairs[pair]['quote']
-        base = pairs[pair]['base']
-        pair_decimals =  pairs[pair]['pair_decimals']
-        fee_volume_currency = pairs[pair]['fee_volume_currency']
-        
-        pair = Trade_Pair(pair, pair_decimals, base, quote, fee_volume_currency) 
-        
-        my_trade_pairs.append(pair) 
-    
-    for trade_pair in my_trade_pairs:
-    
-        if(trade_pair.base[0]=='z'):
-            print("fiat")
-    
-        # for trade_pair2 in my_trade_pairs:
-            
-        #     if (trade_pair2.base == trade_pair.quote) or (trade_pair2.base == trade_pair.base) or (trade_pair2.quote == trade_pair.quote) or (trade_pair2.quote == trade_pair.base):
-                
-        #         for trade_pair3 in my_trade_pairs:
-                
-        #             if (trade_pair3.base == trade_pair2.quote) or (trade_pair3.base == trade_pair2.base) or (trade_pair3.quote == trade_pair2.quote) or (trade_pair3.quote == trade_pair2.base):
-                
-                        # print (trade_pair3.pair, trade_pair2.pair, trade_pair.pair)
-        
-            
-    return
-
 def multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k):
     
     print("starting crypto split test")
