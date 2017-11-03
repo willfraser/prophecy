@@ -6,8 +6,6 @@ import json
 
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
-    
-    # print(k.query_public('AssetPairs'))
 
     if(crypto_currency.symbol != "BCH" and crypto_currency.symbol!="DASH"):
         pair=crypto_currency.symbol+fiat_currency.symbol
@@ -19,54 +17,44 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
         values = k.query_public('Depth',
                             {'pair': pair
                             })
+    
     except requests.HTTPError as e:
         status_code = e.response.status_code
+        
         time.sleep(0.5)
         if(int(status_code)>=500):
-            values = k.query_public('Depth',
-                            {'pair': pair
-                            })
+            get_ask_bid(fiat_currency, crypto_currency, k)
                             
     except requests.Timeout:
-        values = k.query_public('Depth',
-                            {'pair': pair
-                            })
+        time.sleep(0.5)
+        get_ask_bid(fiat_currency, crypto_currency, k)
         
     while(len(values["result"][pair]["bids"])<0):
         try:
-            values = k.query_public('Depth',
-                            {'pair': pair
-                            })
+            get_ask_bid(fiat_currency, crypto_currency, k)
+            
         except requests.HTTPError as e:
             status_code = e.response.status_code
             time.sleep(.5)
             if(int(status_code)>=500):
-                values = k.query_public('Depth',
-                                {'pair': pair
-                                })
+                get_ask_bid(fiat_currency, crypto_currency, k)
                                 
         except requests.Timeout:
-            values = k.query_public('Depth',
-                                {'pair': pair
-                                })
+            get_ask_bid(fiat_currency, crypto_currency, k)
       
         while(len(values["result"][pair]["asks"])<0):
             try:
-                values = k.query_public('Depth',
-                            {'pair': pair
-                            })
+               get_ask_bid(fiat_currency, crypto_currency, k)
+               
             except requests.HTTPError as e:
                 time.sleep(.5)
                 status_code = e.response.status_code
                 if(int(status_code)>=500):
-                    values = k.query_public('Depth',
-                                {'pair': pair
-                                })
+                    get_ask_bid(fiat_currency, crypto_currency, k)
+                    
             except requests.Timeout:
                 time.sleep(.5)
-                values = k.query_public('Depth',
-                                {'pair': pair
-                                })
+                get_ask_bid(fiat_currency, crypto_currency, k)
                                 
     fiat_currency.ask_price = values["result"][pair]["asks"][0].pop(0)
     fiat_currency.ask_price = float(fiat_currency.ask_price) * float(fiat_currency.exchange_USD)
@@ -77,74 +65,6 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
     fiat_currency.bid_volume = values["result"][pair]["bids"][0].pop(0)
     
     return fiat_currency
-
-# def get_book(book, count):
-    
-#     url = 'https://api.kraken.com/0/public/Depth'
-#     pair="XETHZ"+book
-#     payload = {'pair': pair, 'count': count}
-    
-#     r = requests.get(url,params=payload)
-#     values =r.json()
-    
-#     while(len(values["result"][pair]["bids"])<0):
-#         r = requests.get(url,params=payload)
-#         values =r.json()
-  
-#         while(len(values["result"][pair]["asks"])<0):
-#             r = requests.get(url,params=payload)
-#             values =r.json()
-    
-#     return values
-    
-# def get_all_current_books(base, count,currency_book):
-    
-#     currencies = ["USD","CAD"]
-    
-#     url = 'https://api.kraken.com/0/public/Depth'
-#     for currency in currencies:
-#         pair="X"+currency+"Z"+currency
-#         payload = {'pair': pair, 'count': count}
-#         r = requests.get(url,params=payload)
-#         #print(r.status_code)
-        
-#         while(r==0):
-#             r = requests.get(url,params=payload)
-            
-#         values = r.json()
-#         #pprint(values)
-        
-#         #print("Get book for", pair)
-#         #pprint(values)
-#         #print("Currency:", currency)
-        
-#         #pprint(values["result"][pair]["bids"])
-        
-#         if(len(values["result"][pair]["bids"])>0):
-#             if(currency!="USD"):
-#                 #print('Bid length is', len(values["result"][pair]["bids"]))
-#                 currency_book.currency = exchange.get_exchanged_value(values["result"][pair]["bids"][0].pop(0), "USD", currency)
-#                 margin = (float(currency_book.currency)-float(currency_book.USD))/float(currency_book.USD)
-#                 if(margin > 0.0152):
-#                     print("buy", values["result"][pair]["bids"][0].pop(0), "CAD", "with margin", margin)
-#                 else:
-#                     print("hold")
-                    
-#                 #print("Ask in USD", currency_book.currency)
-#                 #print("Percentage split from USD", ((float(currency_book.currency)-float(currency_book.USD))/float(currency_book.USD)))
-#             elif(len(values["result"][pair]["asks"])>0) :
-#                 #print('Ask length is', len(values["result"][pair]["asks"]))
-#                 currency_book.USD = values["result"][pair]["asks"][0].pop(0)
-#                 if(currency_book.CAD>0):
-#                     margin = (float(currency_book.USD)-float(currency_book.CAD))/float(currency_book.CAD)
-#                     if(margin > 0.0152):
-#                         print("buy", values["result"][pair]["bids"][0].pop(0), "USD", "with margin", margin)
-#                     else:
-#                         print("hold")
-          
-            
-#     return currency_book
-
 
 def buy_sell(amount, buy_currency, sell_currency, transfer_currency,saftey_margin,k):
     
@@ -217,8 +137,6 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
         # print("Insufficent funds")
         
         return 0
-    
-    
     
 def sell_all_market(crypto, pair, k):
     

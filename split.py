@@ -138,8 +138,8 @@ def update_exchange(currency):
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
-    # for currency in currencies:
-    #     update_exchange(currency)
+    for currency in currencies:
+        update_exchange(currency)
     
     for crypto in cryptos:
     
@@ -169,8 +169,6 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         print("upside op found")
                         #determine if bids or asks are volume limiting and only trade the smallest of the two 
                         #so we don't get stuck with extra 
-                        # print(currency_1.ask_volume, "units being asked for in", currency_1.currency)
-                        # print(currency_2.bid_volume, "units being bid for in", currency_2.currency)
                         
                         if((float(currency_1.ask_volume) - float(currency_2.bid_volume)) < 0):
                             volume = currency_1.ask_volume
@@ -198,28 +196,10 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                             #extra currency
                             print("Buy", volume, "of", crypto.currency, "in", currency_2.currency, "and sell", currency_1.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
                             kraken.buy_sell(volume,currency_2, currency_1, crypto,0.8,k)
-                    # elif(currency_1.currency == "CAD"):
-                    #     if(float(currency_2.upside_arbitrage[currency_1.currency])>(float(target_up))):
-                    #         print("CAD UPSIDE op found")
-                    #         if(currency_1.bid_volume < currency_2.ask_volume):
-                    #             volume = currency_1.bid_volume
-                    #         else:
-                    #             volume = currency_2.ask_volume
-                            
-                    #         #triggers the buy action with a safety factor to again insure we don't get stuck with 
-                    #         #extra currency
-                    #         print("Buy", volume, "of", crypto.currency, "in", currency_2.currency, "and sell", currency_1.currency, "for a margin of", currency_1.downside_arbitrage[currency_2.currency])
-                    #         # kraken.buy_sell(volume,currency_2, currency_1, crypto,0.8,k)
                         else:
-                    #     #     #no trades found that meet our criteria
+                        #no trades found that meet our criteria
                             print("Hold", crypto.currency, currency_1.currency, "downside margin is:",currency_1.downside_arbitrage[currency_2.currency])
             
-    # for crypto in cryptos:
-    
-        # #get currency bids and asks for all currencies
-        # for currency in crypto.fiats:
-        #     kraken.get_ask_bid(currency,crypto,k)        
-    
     # multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k)
     
     return
