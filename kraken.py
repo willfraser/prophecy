@@ -159,7 +159,7 @@ def sell_all_market(crypto, pair, k):
         else:
             print("Nothing to Sell")
     
-    print("Sell order for", amount, "of", pair, "filled successfully")
+    print("Sell order for of", pair, "filled successfully")
     return 1
     
 def market_sell(pair, amount,k):
