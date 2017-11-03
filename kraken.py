@@ -7,7 +7,7 @@ import json
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
     
-    values =""
+    values = {}
     
     if(crypto_currency.symbol != "BCH" and crypto_currency.symbol!="DASH"):
         pair=crypto_currency.symbol+fiat_currency.symbol
@@ -155,12 +155,11 @@ def sell_all_market(crypto, pair, k):
             market_sell(pair, amount,k)
             
             time.sleep(.5)
-            
-            print("Sell order for", amount, "of", pair, "filled successfully")
+  
         else:
             print("Nothing to Sell")
     
-    print("Sale complete")
+    print("Sell order for", amount, "of", pair, "filled successfully")
     return 1
     
 def market_sell(pair, amount,k):
