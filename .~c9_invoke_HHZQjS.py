@@ -16,12 +16,9 @@ def get_exchanged_value(amount, base, second):
             values =r.json()
         
             print(values)
+        
             usd_value = float(amount)/float(values['rates'][second])
-            
-        except requests.Timeout:
-            time.sleep(.2)
-            get_exchanged_value(amount, base, second)
-            
+        
         #print("Exchanged Value is:", usd_value )
     
     return usd_value

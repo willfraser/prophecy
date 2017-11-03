@@ -138,8 +138,8 @@ def update_exchange(currency):
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
-    for currency in currencies:
-        update_exchange(currency)
+    # for currency in currencies:
+    #     update_exchange(currency)
     
     for crypto in cryptos:
     

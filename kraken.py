@@ -6,7 +6,9 @@ import json
 
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
-
+    
+    value =""
+    
     if(crypto_currency.symbol != "BCH" and crypto_currency.symbol!="DASH"):
         pair=crypto_currency.symbol+fiat_currency.symbol
 
@@ -40,6 +42,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                 get_ask_bid(fiat_currency, crypto_currency, k)
                                 
         except requests.Timeout:
+            time.sleep(.2)
             get_ask_bid(fiat_currency, crypto_currency, k)
       
         while(len(values["result"][pair]["asks"])<0):
