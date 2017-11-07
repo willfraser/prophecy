@@ -10,54 +10,39 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
     values = {}
     
     if(crypto_currency.symbol != "BCH" and crypto_currency.symbol!="DASH"):
-        pair=crypto_currency.symbol+fiat_currency.symbol
+        pair=crypto_currency.symbol
+        pair = pair+fiat_currency.symbol
 
     else:
         pair=crypto_currency.symbol+fiat_currency.symbol[1:4]
     
-    try:
-        values = k.query_public('Depth',
-                            {'pair': pair
-                            })
-    
-    except requests.HTTPError as e:
-        status_code = e.response.status_code
-        
-        time.sleep(0.5)
-        if(int(status_code)>=500):
-            get_ask_bid(fiat_currency, crypto_currency, k)
-                            
-    except requests.Timeout:
-        time.sleep(0.5)
-        get_ask_bid(fiat_currency, crypto_currency, k)
-        
-    while(len(values["result"][pair]["bids"])<0):
+    while True:
+
         try:
-            get_ask_bid(fiat_currency, crypto_currency, k)
-            
+            values = k.query_public('Depth',
+                                {'pair': pair
+                                })
+        
         except requests.HTTPError as e:
             status_code = e.response.status_code
-            time.sleep(.5)
+            
+            time.sleep(0.5)
             if(int(status_code)>=500):
                 get_ask_bid(fiat_currency, crypto_currency, k)
                                 
         except requests.Timeout:
-            time.sleep(.2)
+            time.sleep(0.5)
             get_ask_bid(fiat_currency, crypto_currency, k)
-      
-        while(len(values["result"][pair]["asks"])<0):
-            try:
-               get_ask_bid(fiat_currency, crypto_currency, k)
-               
-            except requests.HTTPError as e:
-                time.sleep(.5)
-                status_code = e.response.status_code
-                if(int(status_code)>=500):
-                    get_ask_bid(fiat_currency, crypto_currency, k)
-                    
-            except requests.Timeout:
-                time.sleep(.5)
-                get_ask_bid(fiat_currency, crypto_currency, k)
+        
+        
+        if "result" in values:
+            if pair in values["result"]:
+                if "bids" in values["result"][pair]:
+                    if "asks" in values["result"][pair]:
+                        if len(values["result"][pair]["bids"])>0:
+                            break
+        
+        time.sleep(.1)
                                 
     fiat_currency.ask_price = values["result"][pair]["asks"][0].pop(0)
     fiat_currency.ask_price = float(fiat_currency.ask_price) * float(fiat_currency.exchange_USD)
@@ -102,6 +87,7 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
     
     if((float(crypto.ask_price)*float(amount))>800.0):
         amount=800.0/float(crypto.ask_price)
+        print("Amount over limit. Reducing to 800")
     
     print("Placing buy order for", amount, "of", pair)
     
@@ -251,63 +237,91 @@ def get_balance(crypto, k):
     return amount
     
 def is_balance(k):
-    try: 
-        return(k.query_private('OpenOrders')['result']['open'])
         
-    except KeyError:
-        is_balance(k)
-    
-    except requests.HTTPError as e:
-        status_code = e.response.status_code
-                
-        if(int(status_code)>=500):
+    while True:
+        print('is balance')
+        
+        try: 
+            openOrders = k.query_private('OpenOrders')
+            
+        except KeyError:
+            is_balance(k)
+        
+        except requests.HTTPError as e:
+            status_code = e.response.status_code
+                    
+            if(int(status_code)>=500):
+                time.sleep(.5)
+                return(is_balance(k))
+                    
+        except requests.Timeout:
             time.sleep(.5)
             return(is_balance(k))
-                
-    except requests.Timeout:
-        time.sleep(.5)
-        return(is_balance(k))
+        
+        if 'result' in openOrders:
+            if 'open' in openOrders['result']:
+                break 
+        
+        time.sleep(.1)
+        
+    return(openOrders['result']['open'])
 
 def get_fiat_balance(fiat,k):
     
-    try:
-        balance = k.query_private('Balance')['result'][fiat]
-    
-    except KeyError:
-        balance = float(0)
-    
-    except requests.HTTPError as e:
-        status_code = e.response.status_code
-                
-        if(int(status_code)>=500):
+    while True:
+        print('get fiat balance')
+        try:
+            balance = k.query_private('Balance')
+            print(balance)
+        
+        except KeyError:
+            balance = float(0)
+        
+        except requests.HTTPError as e:
+            status_code = e.response.status_code
+                    
+            if(int(status_code)>=500):
+                time.sleep(.5)
+                balance = get_fiat_balance(fiat,k)
+                    
+        except requests.Timeout:
             time.sleep(.5)
             balance = get_fiat_balance(fiat,k)
-                
-    except requests.Timeout:
-        time.sleep(.5)
-        balance = get_fiat_balance(fiat,k)
-    
+        
+        if 'result' in balance:
+            balance = balance['result'][fiat]
+            break   
+        
+        time.sleep(.1)
     
     return balance
     
 def is_open_order(k):
-        
-    try:
-        open = k.query_private('OpenOrders')['result']['open']
-        
-    except KeyError:
-          open = 0
-        
-    except requests.HTTPError as e:
-        status_code = e.response.status_code
-                    
-        if(int(status_code)>=500):
+    
+    while True:    
+        print('is open order')
+        try:
+            open = k.query_private('OpenOrders')
+            
+        except KeyError:
+              open = 0
+            
+        except requests.HTTPError as e:
+            status_code = e.response.status_code
+                        
+            if(int(status_code)>=500):
+                time.sleep(.5)
+                open = is_open_order(k)
+                        
+        except requests.Timeout:
             time.sleep(.5)
             open = is_open_order(k)
-                    
-    except requests.Timeout:
-        time.sleep(.5)
-        open = is_open_order(k)
+        
+        if 'result'in open:
+            open = open['result']['open']
+            break
+        
+        time.sleep(.1)
             
     return open
     

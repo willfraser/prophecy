@@ -1,5 +1,6 @@
 import polling
 import split
+import kraken
 
 confirm = "n"
 upside = input("Enter the minimum upside percentage in decimal I.E. 1% is 0.01 :")
@@ -19,6 +20,8 @@ b = split.set_split()
 f = b[0] #set f to fiat
 c = b[1] #set c to crypto
 k = b[2] #set k to kraken
+
+split.multiCryptoSplit(0,0,0,f,c,k)
 
 print("Buy in USD if upside margin is greated than", upside)
 print("Sell back to USD if downside margin is less than", downside)

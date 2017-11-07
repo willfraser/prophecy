@@ -54,8 +54,8 @@ def set_split():
     USD = Fiat("USD","ZUSD")
     print("USD_USD", USD.exchange_USD)
     
-    all_currencies = [USD, CAD, EUR, GBP, JPY]
-    core_currencies = [USD, EUR]
+    all_currencies = {"USD":USD, "CAD":CAD, "EUR":EUR, "GBP":GBP, "JPY":JPY}
+    core_currencies = {"USD":USD, "EUR":EUR}
     
     
     ETH = Crypto("ETH")
@@ -120,7 +120,7 @@ def set_split():
     ZEC.min_order = 0.03
     print("ZEC Initilaized")
     
-    my_cryptos = [ETH, XBT, ETC, LTC, XMR, XRP, ZEC, BCH]
+    my_cryptos = {"ETH":ETH, "XBT":XBT, "ETC": ETC, "LTC":LTC, "XMR":XMR, "XRP":XRP, "ZEC":ZEC, "BCH":BCH}
     
     k = kraken_api.API()
     k.load_key('kraken.key')
@@ -141,15 +141,15 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     # for currency in currencies:
     #     update_exchange(currency)
     
-    for crypto in cryptos:
+    for crypto_key, crypto in cryptos.items():
     
         #get currency bids and asks for all currencies
-        for currency in crypto.fiats:
+        for currency_key, currency in crypto.fiats.items():
             kraken.get_ask_bid(currency,crypto,k)
     
         #calculate USD arbitrage margin    
-        for currency_1 in crypto.fiats:
-            for currency_2 in crypto.fiats:
+        for currency_1_key, currency_1 in crypto.fiats.items():
+            for currency_2_key, currency_2 in crypto.fiats.items():
                 #(price currency is being bought at) - (price USD is being sold at) / (price USD is being sold at)
                 currency_1.upside_arbitrage[currency_2.currency] = ((float(currency_2.bid_price) - float(currency_1.ask_price))/float(currency_1.ask_price))-trans_fee
                 
@@ -159,8 +159,8 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
         #begin trading evaluation and execution    
         print(datetime.datetime.now().time())    
         
-        for currency_1 in crypto.fiats:
-            for currency_2 in crypto.fiats:
+        for currency_1_key, currency_1 in crypto.fiats.items():
+            for currency_2_key in crypto.fiats.items():
                 #if currency is USD ignore    
                 if(currency_1.currency != currency_2.currency):
                     
@@ -206,10 +206,40 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
 
 def multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k):
     
+    #quote is unit currency is priced in i.e. quote of XXBT means currency is priced in Bitcoin
+    #base is first currency in pair i.e. base of XETH means pair would be XETHXXBT
+    
     print("starting crypto split test")
     
-    # print(cryptos[cryptos.index("ETH")])
-    # print(cryptos[cryptos.index("XBT")])
+    #ask is price you can buy at
+    #bid is price you can sell at
+    XBT_buy = float(kraken.get_ask_bid(currencies["USD"],cryptos["XBT"],k ).ask_price)
+    ETH_sell = float(kraken.get_ask_bid(currencies["USD"],cryptos["ETH"],k ).bid_price)
+    
+    values = k.query_public('Depth',
+                    {'pair': "XETHXXBT"
+                        })
+                        
+    ETH_buy = values["result"]["XETHXXBT"]["asks"][0].pop(0)
+    print("eth buy", ETH_buy)
+    # print("bidding pricing", values["result"]["XETHXXBT"]["bids"][0])
+    
+    print("ETH per USD via arbitrge is", XBT_buy*float(ETH_buy))
+    
+    print("ETH per USD", ETH_sell)
+   
+    print("USD->XBT->ETH->USD arbitrage is", ( (ETH_sell-(XBT_buy*float(ETH_buy))) / (XBT_buy*float(ETH_buy))))  
+    
+    
+    # print(kraken.get_ask_bid(cryptos["XBT"],cryptos["ETH"],k ))
+    
+    
+    # for crypto in cryptos:
+    #     if crypto.currency == "ETH":
+            
+            # print(crypto.ask_price)
+    
+    
     
     
     
