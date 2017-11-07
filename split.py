@@ -160,7 +160,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
         print(datetime.datetime.now().time())    
         
         for currency_1_key, currency_1 in crypto.fiats.items():
-            for currency_2_key in crypto.fiats.items():
+            for currency_2_key, currency_2 in crypto.fiats.items():
                 #if currency is USD ignore    
                 if(currency_1.currency != currency_2.currency):
                     

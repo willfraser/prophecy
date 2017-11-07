@@ -10,8 +10,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
     values = {}
     
     if(crypto_currency.symbol != "BCH" and crypto_currency.symbol!="DASH"):
-        pair=crypto_currency.symbol
-        pair = pair+fiat_currency.symbol
+        pair=crypto_currency.symbol+fiat_currency.symbol
 
     else:
         pair=crypto_currency.symbol+fiat_currency.symbol[1:4]
@@ -289,8 +288,12 @@ def get_fiat_balance(fiat,k):
             balance = get_fiat_balance(fiat,k)
         
         if 'result' in balance:
-            balance = balance['result'][fiat]
-            break   
+            if fiat in balance['result']:
+                balance = balance['result'][fiat]
+                break
+            else:
+                balance = 0
+                break
         
         time.sleep(.1)
     
