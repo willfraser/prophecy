@@ -49,6 +49,4 @@ def get_exchanged_value_quandl(amount, base, second):
         #print("Exchanged Value is:", usd_value )
     
     
-    https://api.fixer.io/latest
-    
     return usd_value
