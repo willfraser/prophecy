@@ -268,7 +268,7 @@ def is_balance(k):
 def get_fiat_balance(fiat,k):
     
     while True:
-        print('get fiat balance')
+        # print('get fiat balance')
         try:
             balance = k.query_private('Balance')
             print(balance)
