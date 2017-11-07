@@ -200,7 +200,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                         #no trades found that meet our criteria
                             print("Hold", crypto.currency, currency_1.currency, "downside margin is:",currency_1.downside_arbitrage[currency_2.currency])
             
-    multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k)
+    # multiCryptoSplit(target_up, target_down, trans_fee, currencies, cryptos, k)
     
     return
 
