@@ -275,6 +275,7 @@ def get_fiat_balance(fiat,k):
         
         except KeyError:
             balance = float(0)
+            break
         
         except requests.HTTPError as e:
             status_code = e.response.status_code
