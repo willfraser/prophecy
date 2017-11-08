@@ -274,7 +274,6 @@ def get_fiat_balance(fiat,k):
             print(balance)
         
         except KeyError:
-            balance = float(0)
             break
         
         except requests.HTTPError as e:
