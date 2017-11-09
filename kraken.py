@@ -287,14 +287,14 @@ def get_fiat_balance(fiat,k):
             time.sleep(.5)
             balance = get_fiat_balance(fiat,k)
         
-        print(balance)
-        if 'result' in balance:
-            if fiat in balance['result']:
-                balance = balance['result'][fiat]
-                break
-            else:
-                balance = 0
-                break
+        if balance != 0:
+            if 'result' in balance:
+                if fiat in balance['result']:
+                    balance = balance['result'][fiat]
+                    break
+                else:
+                    balance = 0
+                    break
         
         time.sleep(.1)
     
