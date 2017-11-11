@@ -33,14 +33,16 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
             time.sleep(0.5)
             get_ask_bid(fiat_currency, crypto_currency, k)
         
-        
-        if "result" in values:
-            if pair in values["result"]:
-                if "bids" in values["result"][pair]:
-                    if "asks" in values["result"][pair]:
-                        if len(values["result"][pair]["bids"])>0:
-                            break
-        
+        try:
+            if "result" in values:
+                if pair in values["result"]:
+                    if "bids" in values["result"][pair]:
+                        if "asks" in values["result"][pair]:
+                            if len(values["result"][pair]["bids"])>0:
+                                break
+        except:
+            get_ask_bid(fiat_currency,crypto_currency,k)
+            
         time.sleep(.1)
                                 
     fiat_currency.ask_price = values["result"][pair]["asks"][0].pop(0)
@@ -206,6 +208,7 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
         
 def get_balance(crypto, k):
     
+    
     try:
         amt = k.query_private('Balance')
         
@@ -221,18 +224,21 @@ def get_balance(crypto, k):
         time.sleep(.5)
         amt = get_balance(crypto, k)    
     
-    if 'result' in amt:
-        amount = amt['result']
-        if crypto.symbol in amount:
-            print(amount)
-            amount = float(amount[crypto.symbol])
+    try:
+        if 'result' in amt:
+            amount = amt['result']
+            if crypto.symbol in amount:
+                print(amount)
+                amount = float(amount[crypto.symbol])
+            else:
+                time.sleep(0.2)
+                get_balance(crypto,k)
         else:
-            time.sleep(0.2)
-            get_balance(crypto,k)
-    else:
-            time.sleep(0.2)
-            get_balance(crypto,k)
-        
+                time.sleep(0.2)
+                get_balance(crypto,k)
+    except:
+        get_balance(crypto, k)
+      
     return amount
     
 def is_balance(k):
@@ -257,10 +263,14 @@ def is_balance(k):
             time.sleep(.5)
             return(is_balance(k))
         
-        if 'result' in openOrders:
-            if 'open' in openOrders['result']:
-                break 
+        try:
+            if 'result' in openOrders:
+                if 'open' in openOrders['result']:
+                    break 
         
+        except:
+            is_balance(k)
+            
         time.sleep(.1)
         
     return(openOrders['result']['open'])
@@ -288,13 +298,16 @@ def get_fiat_balance(fiat,k):
             balance = get_fiat_balance(fiat,k)
         
         if balance != 0:
-            if 'result' in balance:
-                if fiat in balance['result']:
-                    balance = balance['result'][fiat]
-                    break
-                else:
-                    balance = 0
-                    break
+            try:
+                if 'result' in balance:
+                    if fiat in balance['result']:
+                        balance = balance['result'][fiat]
+                        break
+                    else:
+                        balance = 0
+                        break
+            except:
+                get_fiat_balance(fiat,k)
         
         time.sleep(.1)
     
@@ -321,10 +334,13 @@ def is_open_order(k):
             time.sleep(.5)
             open = is_open_order(k)
         
-        if 'result'in open:
-            open = open['result']['open']
-            break
-        
+        try:
+            if 'result'in open:
+                open = open['result']['open']
+                break
+        except:
+            is_open_order(k)
+            
         time.sleep(.1)
             
     return open
