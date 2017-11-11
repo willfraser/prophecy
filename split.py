@@ -138,8 +138,11 @@ def update_exchange(currency):
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
-    # for currency in currencies:
-    #     update_exchange(currency)
+    now = datetime.time
+    if now.hour == 12:
+        if now.minute >0 and if now.minute <5: 
+            for currency in currencies:
+                update_exchange(currency)
     
     for crypto_key, crypto in cryptos.items():
     
