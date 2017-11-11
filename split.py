@@ -18,6 +18,7 @@ class Fiat:
         self.downside_arbitrage = {}
         self.fiats = []
         self.symbol = symbol
+        self.updated_at = datetime.datetime.now()
 
 class Crypto:
     
@@ -130,18 +131,19 @@ def set_split():
 def update_exchange(currency):
     
     currency.exchange_USD = exchange.get_exchanged_value(1, "USD", currency.currency)
+    currency.updated_at = datetime.datetime.now()
     
-    return 1
+    return currency
 
 #execute the currency split arbitrage algorithim
 #ask = selling price (price at which you can buy the instrument)
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
-    now = datetime.time
-    if now.hour == 12:
-        if now.minute >0 and now.minute <5: 
-            for currency in currencies:
+    now = datetime.datetime.now()
+    
+    for currency_key, currency in currencies.items():
+        if ((now - currency.updated_at).total_seconds()) > 43200:
                 update_exchange(currency)
     
     for crypto_key, crypto in cryptos.items():
@@ -158,9 +160,6 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                 
                 #(price USD is being bought at) - (price currency is being sold at) / (price currency is being sold at)
                 currency_1.downside_arbitrage[currency_2.currency] = ((float(currency_1.bid_price) - float(currency_2.ask_price))/float(currency_2.ask_price))-trans_fee 
-        
-        #begin trading evaluation and execution    
-        print(datetime.datetime.now().time())    
         
         for currency_1_key, currency_1 in crypto.fiats.items():
             for currency_2_key, currency_2 in crypto.fiats.items():
