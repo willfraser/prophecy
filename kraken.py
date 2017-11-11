@@ -208,6 +208,7 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
         
 def get_balance(crypto, k):
     
+    amount = {}
     
     try:
         amt = k.query_private('Balance')
@@ -363,4 +364,3 @@ def get_all_pairs(k):
     except requests.Timeout:
         time.sleep(.5)
         pairs = get_all_pairs(k)
-    
