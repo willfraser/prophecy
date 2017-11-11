@@ -140,7 +140,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
     now = datetime.time
     if now.hour == 12:
-        if now.minute >0 and if now.minute <5: 
+        if now.minute >0 and now.minute <5: 
             for currency in currencies:
                 update_exchange(currency)
     
