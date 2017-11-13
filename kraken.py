@@ -105,20 +105,21 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
             print("purchase total")
             #make buy
             
-            market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
+            result = market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
             
         else:
             amount = round(0.8*(float(fiat_balance)/float(crypto.ask_price)),4)
             print("purchase reduced total")
             
             #make buy
-            market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
+            result = market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
         
-        while is_balance(k):
-            time.sleep(.1)
-            
-           
-        print("Buy order for", amount, "of", pair, "filled successfully")
+        if(result == 1):
+            while is_balance(k):
+                time.sleep(.1)
+            print("Buy order for", amount, "of", pair, "filled successfully")
+        else:
+            print("Buy order failed. Do not sell")
         
         return 1
     
@@ -138,7 +139,7 @@ def sell_all_market(crypto, pair, k):
             print("Placing sell order for", amount, "of", pair)
             
             #make sell
-            market_sell(pair, amount,k)
+            market_sell(pair, amount, crypto, k)
             
             time.sleep(.5)
   
@@ -148,25 +149,31 @@ def sell_all_market(crypto, pair, k):
     print("Sell order for of", pair, "filled successfully")
     return 1
     
-def market_sell(pair, amount,k):
-    try:
-        pprint(k.query_private('AddOrder',
-                        {'pair': pair,
-                         'type': 'sell',
-                         'ordertype': 'market',
-                         'volume': amount,
-                        }))
-                        
-    except requests.HTTPError as e:
-        print('market sell http error')
-        status_code = e.response.status_code
-        if(int(status_code)>=500):
+def market_sell(pair, amount,crypto, k):
+    
+    if(get_balance(crypto, k)):
+        try:
+            pprint(k.query_private('AddOrder',
+                            {'pair': pair,
+                             'type': 'sell',
+                             'ordertype': 'market',
+                             'volume': amount,
+                            }))
+                            
+        except requests.HTTPError as e:
+            print('market sell http error')
+            status_code = e.response.status_code
+            if(int(status_code)>=500):
+                time.sleep(.5)
+                market_sell(pair, amount,crypto,k)
+                    
+        except requests.Timeout:
             time.sleep(.5)
-            market_sell(pair, amount,k)
-                
-    except requests.Timeout:
-        time.sleep(.5)
-        market_sell(pair, amount,k)
+            market_sell(pair, amount, crypto, k)
+    else:
+        print("Nothing to sell")
+        
+    return
         
 def market_buy(fiat_symbol, crypto_symbol, amount,k):
     
@@ -179,6 +186,7 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
     if is_balance(k):
         print("order outstanding")
     else:
+        
         try:
             pprint(k.query_private('AddOrder',
                                 {'pair': pair,
@@ -186,11 +194,13 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
                                  'ordertype': 'market',
                                  'volume': amount,
                                 }))
-                            
+        
+            result = 1
+        
         except requests.HTTPError as e:
             print('market buy http error')
             status_code = e.response.status_code
-                    
+            result = 0        
             # if(int(status_code)>=500):
             #     if is_balance(k):
             #         print("order outstanding")
@@ -200,10 +210,16 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
                         
         except requests.Timeout:
             if is_balance(k):
-                    print("order outstanding")
+                print("order outstanding")
+                result = 1
+            else:
+                result = 0
+                
             # else:
             #     time.sleep(.5)
             #     market_buy(fiat_symbol, crypto_symbol, amount,k)
+    
+    return result
         
 def get_balance(crypto, k):
     
