@@ -1,6 +1,17 @@
 import polling
 import split
 import kraken
+import logging
+
+logger = logging.getLogger('prophecy')
+hdlr = logging.FileHandler('/prophecy.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.WARNING)
+
+logger.error('We have a problem')
+logger.info('While this is just chatty')
 
 confirm = "n"
 upside = input("Enter the minimum upside percentage in decimal I.E. 1% is 0.01 :")
@@ -25,6 +36,7 @@ k = b[2] #set k to kraken
 # split.multiCryptoSplit(0,0,0,f,c,k)
 
 print("Buy in USD if upside margin is greated than", upside)
+logger.error("Logging test")
 print("Sell back to USD if downside margin is less than", downside)
 
 #runs the selected algorithm continually at the specified "steps" or seconds
