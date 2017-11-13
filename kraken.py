@@ -3,7 +3,6 @@ import time
 import requests
 import json
 
-
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
     
@@ -192,19 +191,19 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
             print('market buy http error')
             status_code = e.response.status_code
                     
-            if(int(status_code)>=500):
-                if is_balance(k):
-                    print("order outstanding")
-                else:
-                    time.sleep(.5)
-                    market_buy(fiat_symbol, crypto_symbol, amount,k)
+            # if(int(status_code)>=500):
+            #     if is_balance(k):
+            #         print("order outstanding")
+            #     else:
+            #         time.sleep(.5)
+            #         market_buy(fiat_symbol, crypto_symbol, amount,k)
                         
         except requests.Timeout:
             if is_balance(k):
                     print("order outstanding")
-            else:
-                time.sleep(.5)
-                market_buy(fiat_symbol, crypto_symbol, amount,k)
+            # else:
+            #     time.sleep(.5)
+            #     market_buy(fiat_symbol, crypto_symbol, amount,k)
         
 def get_balance(crypto, k):
     
