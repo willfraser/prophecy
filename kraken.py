@@ -114,12 +114,13 @@ def buy_market(amount, pair, buy_fiat, crypto, k):
             #make buy
             result = market_buy(buy_fiat.symbol, crypto.symbol, amount,k)
         
-        if(result == 1):
-            while is_balance(k):
-                time.sleep(.1)
+        while is_balance(k):
+            time.sleep(.1)
+        
+        if(get_balance(crypto,k)):
             print("Buy order for", amount, "of", pair, "filled successfully")
-        else:
-            print("Buy order failed. Do not sell")
+        else: 
+            print("Buy order for", amount, "of", pair, "failed")
         
         return 1
     
@@ -200,7 +201,11 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
         except requests.HTTPError as e:
             print('market buy http error')
             status_code = e.response.status_code
-            result = 0        
+            if(is_balance(k)):
+                result = 1
+            else:
+                result = 0  
+                
             # if(int(status_code)>=500):
             #     if is_balance(k):
             #         print("order outstanding")
@@ -256,9 +261,10 @@ def get_balance(crypto, k):
         get_balance(crypto, k)
       
     return amount
-    
+
+# Checks if there are any open orders
 def is_balance(k):
-        
+    
     while True:
         print('is balance')
         
