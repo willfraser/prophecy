@@ -8,13 +8,13 @@ hdlr = logging.FileHandler('/prophecy.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 logger.error('We have a problem')
 logger.info('While this is just chatty')
 
 confirm = "n"
-upside = input("Enter the minimum upside percentage in decimal I.E. 1% is 0.01 :")
+upside = input("Enter the minimum upside percentage in decimal I.E. 1% is 0.01:")
 downside = input("Enter the minimum downside percentage in decimal I.E. .1% is 0.001 :")
 trade_cost = input("Enter the commision price paid for both buy and sell. I.E. if it's 0.2% per trade then enter 0.004:")
 
