@@ -2,6 +2,9 @@ import kraken
 import exchange
 import datetime
 import kraken_api
+import logging
+
+logger = logging.getLogger('prophecy')
 
 #An object to represent any Fiat currency with the required meta-data
 class Fiat:
@@ -65,12 +68,14 @@ def set_split():
     ETH.symbol = "XETH"
     ETH.min_order = 0.02
     print("ETH Initialized")
+    logger.info("XBT Initialized")
     
     XBT = Crypto("XBT")
     XBT.fiats = all_currencies
     XBT.symbol = "XXBT"
     XBT.min_order = 0.002
     print("XBT Initilaized")
+    logger.info("XBT Initialized")
     
     BCH = Crypto("BCH")
     BCH.fiats = core_currencies

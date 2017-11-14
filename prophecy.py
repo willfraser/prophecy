@@ -31,6 +31,8 @@ print("Buy in USD if upside margin is greated than", upside)
 logger.info("Upside Margin set to %s", upside)
 print("Sell back to USD if downside margin is less than", downside)
 logger.info("Downside Margin set to %s", downside)
+print("Trading costs set at", downside)
+logger.info("Trading cost set to %s", trade_cost)
 
 #runs the selected algorithm continually at the specified "steps" or seconds
 polling.poll(
