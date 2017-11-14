@@ -136,7 +136,7 @@ def sell_all_market(crypto, pair, k):
     
         amount = get_balance(crypto, k)
         
-        if(amount>0):
+        if(amount):
             print("Placing sell order for", amount, "of", pair)
             
             #make sell
@@ -248,6 +248,7 @@ def get_balance(crypto, k):
     try:
         if 'result' in amt:
             amount = amt['result']
+            print("Testing amount in get_balance", amount)
             if crypto.symbol in amount:
                 print(amount)
                 amount = float(amount[crypto.symbol])
@@ -259,7 +260,8 @@ def get_balance(crypto, k):
                 get_balance(crypto,k)
     except:
         get_balance(crypto, k)
-      
+    
+    
     return amount
 
 # Checks if there are any open orders
