@@ -10,21 +10,13 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.INFO)
 
-logger.error('We have a problem')
-logger.info('While this is just chatty')
+
+logger.info('Prophecy Start')
 
 confirm = "n"
 upside = input("Enter the minimum upside percentage in decimal I.E. 1% is 0.01:")
 downside = input("Enter the minimum downside percentage in decimal I.E. .1% is 0.001 :")
 trade_cost = input("Enter the commision price paid for both buy and sell. I.E. if it's 0.2% per trade then enter 0.004:")
-
-while float(downside) < -.002 and confirm == "n":
-    confirm = input("Are you sure you want downside to be", downside, "which is less than -.001")
-    if str(confirm) == "y" or str(confirm) == "Y":
-        print("confirmed")
-    else:
-        confirm = "n"
-    
             
 #setup the split algorithim 
 b = split.set_split()
@@ -36,8 +28,9 @@ k = b[2] #set k to kraken
 # split.multiCryptoSplit(0,0,0,f,c,k)
 
 print("Buy in USD if upside margin is greated than", upside)
-logger.error("Logging test")
+logger.info("Upside Margin set to %s", upside)
 print("Sell back to USD if downside margin is less than", downside)
+logger.info("Downside Margin set to %s", downside)
 
 #runs the selected algorithm continually at the specified "steps" or seconds
 polling.poll(
