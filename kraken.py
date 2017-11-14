@@ -2,6 +2,9 @@ from pprint import pprint
 import time 
 import requests
 import json
+import logging
+
+logger = logging.getLogger('prophecy')
 
 #get the 1st bid and 1st ask of any specified currency
 def get_ask_bid(fiat_currency,crypto_currency,k):
@@ -22,6 +25,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                                 })
         
         except requests.HTTPError as e:
+            logger.error('get_ask_bid HTTP Error %s', e)
             status_code = e.response.status_code
             
             time.sleep(0.5)
@@ -29,6 +33,7 @@ def get_ask_bid(fiat_currency,crypto_currency,k):
                 get_ask_bid(fiat_currency, crypto_currency, k)
                                 
         except requests.Timeout:
+            logger.error('get_ask_bid timeout')
             time.sleep(0.5)
             get_ask_bid(fiat_currency, crypto_currency, k)
         
@@ -162,6 +167,7 @@ def market_sell(pair, amount,crypto, k):
                             }))
                             
         except requests.HTTPError as e:
+            logger.error('market_sell HTTP Error %s', e)
             print('market sell http error')
             status_code = e.response.status_code
             if(int(status_code)>=500):
@@ -199,6 +205,7 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
             result = 1
         
         except requests.HTTPError as e:
+            logger.error('market_buy HTTP Error %s', e)
             print('market buy http error')
             status_code = e.response.status_code
             if(is_balance(k)):
@@ -214,6 +221,7 @@ def market_buy(fiat_symbol, crypto_symbol, amount,k):
             #         market_buy(fiat_symbol, crypto_symbol, amount,k)
                         
         except requests.Timeout:
+            logger.error('market_buy timeout')
             if is_balance(k):
                 print("order outstanding")
                 result = 1
@@ -235,6 +243,7 @@ def get_balance(crypto, k):
         
         
     except requests.HTTPError as e:
+        logger.error('get_balance HTTP Error %s', e)
         status_code = e.response.status_code
                 
         if(int(status_code)>=500):
@@ -242,6 +251,7 @@ def get_balance(crypto, k):
             amt = get_balance(crypto, k)
                 
     except requests.Timeout:
+        logger.error('get_balance timeout')
         time.sleep(.5)
         amt = get_balance(crypto, k)    
     
@@ -277,6 +287,7 @@ def is_balance(k):
             is_balance(k)
         
         except requests.HTTPError as e:
+            logger.error('is_blance HTTP Error %s', e)
             status_code = e.response.status_code
                     
             if(int(status_code)>=500):
@@ -284,6 +295,7 @@ def is_balance(k):
                 return(is_balance(k))
                     
         except requests.Timeout:
+            logger.error('is_blance timeout')
             time.sleep(.5)
             return(is_balance(k))
         
@@ -311,6 +323,7 @@ def get_fiat_balance(fiat,k):
             break
         
         except requests.HTTPError as e:
+            logger.error('get_fiat_balance HTTP Error %s', e)
             status_code = e.response.status_code
                     
             if(int(status_code)>=500):
@@ -318,6 +331,7 @@ def get_fiat_balance(fiat,k):
                 balance = get_fiat_balance(fiat,k)
                     
         except requests.Timeout:
+            logger.error('get_fiat_balance Timeout')
             time.sleep(.5)
             balance = get_fiat_balance(fiat,k)
         
@@ -339,8 +353,7 @@ def get_fiat_balance(fiat,k):
     
 def is_open_order(k):
     
-    while True:    
-        print('is open order')
+    while True:
         try:
             open = k.query_private('OpenOrders')
             
@@ -348,6 +361,7 @@ def is_open_order(k):
               open = 0
             
         except requests.HTTPError as e:
+            logger.error('is_open_order HTTP Error %s', e)
             status_code = e.response.status_code
                         
             if(int(status_code)>=500):
@@ -355,6 +369,7 @@ def is_open_order(k):
                 open = is_open_order(k)
                         
         except requests.Timeout:
+            logger.error('is_open_order timeout')
             time.sleep(.5)
             open = is_open_order(k)
         
@@ -363,6 +378,7 @@ def is_open_order(k):
                 open = open['result']['open']
                 break
         except:
+            time.sleep(.5)
             is_open_order(k)
             
         time.sleep(.1)
@@ -378,6 +394,7 @@ def get_all_pairs(k):
         return values
         
     except requests.HTTPError as e:
+        logger.error('get_all_pairs HTTP Error %s', e)
         status_code = e.response.status_code
                     
         if(int(status_code)>=500):
@@ -385,5 +402,6 @@ def get_all_pairs(k):
             pairs = get_all_pairs(k)
                     
     except requests.Timeout:
+        logger.error('get_all_pairs timeout')
         time.sleep(.5)
         pairs = get_all_pairs(k)

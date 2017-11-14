@@ -49,14 +49,23 @@ def set_split():
   
     CAD = Fiat("CAD","ZCAD")
     print("CAD_USD", CAD.exchange_USD)
+    logger.info("CAD Initialized at exchange of %s", CAD.exchange_USD)
+    
     GBP = Fiat("GBP","ZGBP")
     print("GBP_USD", GBP.exchange_USD)
+    logger.info("GBP Initialized at exchange of %s", GBP.exchange_USD)
+    
     EUR = Fiat("EUR","ZEUR")
     print("EUR_USD", EUR.exchange_USD)
+    logger.info("EUR Initialized at exchange of %s", EUR.exchange_USD)
+    
     JPY = Fiat("JPY","ZJPY")
-    print("EUR_USD", EUR.exchange_USD)
+    print("JPY_USD", JPY.exchange_USD)
+    logger.info("JPY Initialized at exchange of %s", JPY.exchange_USD)
+   
     USD = Fiat("USD","ZUSD")
     print("USD_USD", USD.exchange_USD)
+    logger.info("USD Initialized at exchange of %s", USD.exchange_USD)
     
     all_currencies = {"USD":USD, "CAD":CAD, "EUR":EUR, "GBP":GBP, "JPY":JPY}
     core_currencies = {"USD":USD, "EUR":EUR}
@@ -67,64 +76,64 @@ def set_split():
     ETH.crypto_pairs = ["EOS"]
     ETH.symbol = "XETH"
     ETH.min_order = 0.02
-    print("ETH Initialized")
     logger.info("XBT Initialized")
     
     XBT = Crypto("XBT")
     XBT.fiats = all_currencies
     XBT.symbol = "XXBT"
     XBT.min_order = 0.002
-    print("XBT Initilaized")
     logger.info("XBT Initialized")
     
     BCH = Crypto("BCH")
     BCH.fiats = core_currencies
     BCH.symbol = "BCH"
     BCH.min_order = 0.002
-    print("BCH Initilaized")
+    logger.info("BCH Initialized")
     
     #ToDo this may cause problems due to being 4 characters long
     DASH = Crypto("DASH")
     DASH.fiats = core_currencies
     DASH.symbol = "DASH"
     DASH.min_order = 0.03
-    print("DASH Initilaized")
+    logger.info("DASH Initialized")
     
     ETC = Crypto("ETC")
     ETC.fiats = core_currencies
     ETC.symbol = "XETC"
     ETC.min_order = 0.3
-    print("ETC Initilaized")
+    logger.info("ETC Initialized")
     
     LTC = Crypto("LTC")
     LTC.fiats = core_currencies
     LTC.symbol = "XLTC"
     LTC.min_order = 0.1
-    print("LTC Initilaized")
+    logger.info("LTC Initialized")
 
     REP = Crypto("REP")
     REP.fiats = core_currencies
     REP.symbol = "XREP"
     REP.min_order = 0.3
-    print("REP Initilaized")
+    logger.info("REP Initialized")
     
     XMR = Crypto("XMR")
     XMR.fiats = core_currencies
     XMR.symbol = "XXMR"
     XMR.min_order = 0.1
-    print("XMR Initilaized")
+    logger.info("XMR Initialized")
     
     XRP = Crypto("XRP")
     XRP.fiats = core_currencies
     XRP.symbol = "XXRP"
     XRP.min_order = 30
-    print("XRP Initilaized")
+    logger.info("XRP Initialized")
     
     ZEC = Crypto("ZEC")
     ZEC.fiats = core_currencies
     ZEC.symbol = "XZEC"
     ZEC.min_order = 0.03
-    print("ZEC Initilaized")
+    logger.info("ZEC Initialized")
+    
+    print("All crypto initilized")
     
     my_cryptos = {"ETH":ETH, "XBT":XBT, "ETC": ETC, "LTC":LTC, "XMR":XMR, "XRP":XRP, "ZEC":ZEC, "BCH":BCH}
     
@@ -137,6 +146,7 @@ def update_exchange(currency):
     
     currency.exchange_USD = exchange.get_exchanged_value(1, "USD", currency.currency)
     currency.updated_at = datetime.datetime.now()
+    logger.info("Exchange updated for %s", currency.symbol)
     
     return currency
 
@@ -145,10 +155,13 @@ def update_exchange(currency):
 #bid = buying price (price at which you can sell the instrument)
 def run(target_up,target_down, trans_fee,currencies, cryptos, k):
     
+    logger.info("Starting trading logic")
+    
     now = datetime.datetime.now()
     
     for currency_key, currency in currencies.items():
         if ((now - currency.updated_at).total_seconds()) > 43200:
+                logger.info("Exchange out of date for %s", currency.symbol)
                 update_exchange(currency)
     
     for crypto_key, crypto in cryptos.items():
@@ -173,7 +186,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                     
                     #evaluates to see if gain is sufficent to go from USD to non-USD
                     if(float(currency_1.upside_arbitrage[currency_2.currency])>float(target_up)):
-                        print("upside op found")
+                        logger.info("Upside op found between %s and %s", currency_1.symbol, currency_2.symbol)
                         #determine if bids or asks are volume limiting and only trade the smallest of the two 
                         #so we don't get stuck with extra 
                         
@@ -184,6 +197,7 @@ def run(target_up,target_down, trans_fee,currencies, cryptos, k):
                              
                         #triggers the buy action with a safety factor to again insure we don't get stuck with 
                         #extra currency
+                        logger.info("Buy %s of %s in %s and sell %s for a margin of %s" , volume, crypto.currency,currency_1.currency, currency_2.currency, currency_1.upside_arbitrage[currency_2.currency] )
                         print("Buy", volume, "of", crypto.currency, "in", currency_1.currency, "and sell", currency_2.currency, "for a margin of", currency_1.upside_arbitrage[currency_2.currency])
                         kraken.buy_sell(volume, currency_1, currency_2, crypto, 0.8,k)
                     else:
